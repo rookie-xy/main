@@ -10,7 +10,10 @@ import (
 var modules = String{ len(Modules), "modules" }
 
 func main() {
+    log := NewLog()
+
     if modules.Len < 1 {
+        log.Warn("have not found:", modules.Data)
         fmt.Println("have not found:", modules.Data)
         return
     }
@@ -22,12 +25,15 @@ func main() {
         //Modules[count].Index = uint(count)
     }
 
-    Init(Modules)
-/*
-    Main(Modules)
+    configure := NewConfigure(log)
 
-    Monitor()
+    Init(Modules, configure)
+
+    channel := NewChannel()
+
+    Main(Modules, channel)
+
+/*    Monitor() */
 
     Exit(Modules)
-    */
 }

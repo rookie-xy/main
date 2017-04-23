@@ -13,14 +13,35 @@ const (
 )
 
 type Inputs struct {
-    *Module
+    *Channels
+}
+
+type Inputable interface {
+
+}
+
+type InputsCtx struct {
+    *Context
 }
 
 var input = String{ len("input"), "input" }
-var inputContext = &Context{
-    input,
-    nil,
-    nil,
+var inputContext = &InputsCtx{
+    Context: &Context{
+        input,
+        nil,
+    },
+}
+
+func (ic *InputsCtx) Create() int {
+    return Ok
+}
+
+func (ic *InputsCtx) Insert() int {
+    return Ok
+}
+
+func (ic *InputsCtx) Type() *Context {
+    return ic.Context
 }
 
 var inputs = String{ len("inputs"), "inputs" }
@@ -49,23 +70,26 @@ func inputsBlock(cfg *Configure, _ *Command, _ *unsafe.Pointer) int {
     return Ok
 }
 
-var inputModule = &Inputs{
-    Module: &Module{
-    MODULE_V1,
-    CONTEXT_V1,
-    unsafe.Pointer(inputContext),
-    inputCommands,
-    CONFIG_MODULE,
+var inputsModule = &Inputs{
+    Channels: &Channels{
+        Module: &Module{
+            MODULE_V1,
+            CONTEXT_V1,
+            //unsafe.Pointer(inputContext),
+								    inputContext,
+            inputCommands,
+            CONFIG_MODULE,
+        },
     },
 }
 
-func (i *Inputs) Init() int {
+func (i *Inputs) Init(c *Configure) int {
     fmt.Println("inputs init")
     return Ok
 }
 
-func (i *Inputs) Main() int {
-    fmt.Println("inputs init")
+func (i *Inputs) Main(c *Channel) int {
+    fmt.Println("inputs main")
     return Ok
 }
 
@@ -79,5 +103,5 @@ func (i *Inputs) Type() *Module {
 }
 
 func init() {
-    Modules = Load(Modules, inputModule)
+    Modules = Load(Modules, inputsModule)
 }

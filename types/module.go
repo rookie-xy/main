@@ -1,18 +1,17 @@
 package types
 
-import "unsafe"
 
 type Module struct {
     CtxIndex   uint
     Index      uint
-    Context    unsafe.Pointer
+    Context    Contextable
     Commands   []Command
     Type       int64
 }
 
 type Moduleable interface {
-    Init() int
-    Main() int
+    Init(c *Configure) int
+    Main(c *Channel) int
     Exit() int
     Type() *Module
 }
@@ -29,17 +28,17 @@ func Load(modules []Moduleable, module Moduleable) []Moduleable {
     return modules
 }
 
-func Init(modules []Moduleable) {
+func Init(modules []Moduleable, c *Configure) {
     for i := 0; modules[i] != nil; i++ {
         module := modules[i]
-        module.Init()
+        module.Init(c)
     }
 }
 
-func Main(modules []Moduleable) {
+func Main(modules []Moduleable, c *Channel) {
     for i := 0; modules[i] != nil; i++ {
         module := modules[i]
-        module.Main()
+        module.Main(c)
     }
 }
 

@@ -8,79 +8,77 @@ import (
     "unsafe"
 )
 
-type ContextCreateFunc func(c *Configure) unsafe.Pointer
-type ContextInitFunc func(c *Configure, configure *unsafe.Pointer) string
-
 type Context struct {
-    Name    String
-    Create  ContextCreateFunc
-    Init    ContextInitFunc
+    Name   String
+    P     *unsafe.Pointer
 }
-/*
+
 type Contextable interface {
     Create() int
-    Insert() int
+    Insert(p *unsafe.Pointer) int
+    Type() *Context
 }
-*/
 
-func Block(c *Configure, m []*Moduleable, modType int64, cfgType int) int {
+func NewContext() *Context {
+    return &Context{
+        "context",
+        nil,
+    }
+}
+
+func (c *Context) Block(cfg *Configure, modules []Moduleable, modType int64, cfgType int) int {
     for m := 0; modules[m] != nil; m++ {
-        module := modules[m]
+        module := modules[m].Type()
+
         if module.Type != modType {
             continue
         }
 
-        context := (*Context)(unsafe.Pointer(module.Context))
-        if context == nil {
+        if handle := module.Context; handle != nil {
+            if this := handle.Create(); this != Error {
+                handle.Type().P[module.CtxIndex] = this
+
+            } else {
+                return this
+            }
+
+        } else {
             continue
         }
-
-        if handle := context.Create; handle != nil {
-            this := handle(c)
-            if cycle.SetContext(module.Index, &this) == Error {
-                return Error
-            }
-        }
     }
-/*
-    configure := cycle.GetConfigure()
+
+    configure := cfg.GetConfigure()
     if configure == nil {
         return Error
     }
-    */
 
-    if c.SetModuleType(modType) == Error {
+    if cfg.SetModuleType(modType) == Error {
         return Error
     }
 
-    if c.SetCommandType(cfgType) == Error {
+    if cfg.SetCommandType(cfgType) == Error {
         return Error
     }
 
-    if c.Materialized(modules) == Error {
+    if cfg.Materialized(modules) == Error {
         return Error
     }
 
     for m := 0; modules[m] != nil; m++ {
-        module := modules[m]
+        module := modules[m].Type()
         if module.Type != modType {
             continue
         }
 
-        this := (*Context)(unsafe.Pointer(module.Context))
-        if this == nil {
-            continue
-        }
+        if handle := module.Context; handle != nil {
+            context := handle.Type().P[module.CtxIndex]
 
-        context := cycle.GetContext(module.Index)
-        if context == nil {
-            continue
-        }
-
-        if init := this.Init; init != nil {
-            if init(cycle, context) == "-1" {
-                return Error
+            if this := handle.Insert(context); this == Error {
+												    return this
             }
+
+        } else {
+            continue
         }
     }
 
