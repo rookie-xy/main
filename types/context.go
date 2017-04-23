@@ -16,7 +16,7 @@ type Context struct {
 type Contextable interface {
     Create() int
     Insert(p *unsafe.Pointer) int
-    Type() *Context
+    Self() *Context
 }
 
 func NewContext() *Context {

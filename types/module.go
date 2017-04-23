@@ -13,7 +13,7 @@ type Moduleable interface {
     Init(c *Configure) int
     Main(c *Channel) int
     Exit() int
-    Type() *Module
+    Self() *Module
 }
 
 var Modules []Moduleable

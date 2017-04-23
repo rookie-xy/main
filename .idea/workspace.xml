@@ -2,11 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4c1fcab5-2f10-48da-b8c3-eb8cb356b56e" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/types/channel.go" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/main.go" afterPath="$PROJECT_DIR$/main.go" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/modules/inputs.go" afterPath="$PROJECT_DIR$/modules/inputs.go" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/types/context.go" afterPath="$PROJECT_DIR$/types/context.go" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/types/module.go" afterPath="$PROJECT_DIR$/types/module.go" />
     </list>
@@ -45,11 +40,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="context.go" pinned="false" current-in-tab="true">
+      <file leaf-file-name="context.go" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/types/context.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="129">
-              <caret line="23" column="0" lean-forward="false" selection-start-line="23" selection-start-column="0" selection-end-line="23" selection-end-column="0" />
+            <state relative-caret-position="201">
+              <caret line="18" column="7" lean-forward="false" selection-start-line="18" selection-start-column="7" selection-end-line="18" selection-end-column="7" />
               <folding />
             </state>
           </provider>
@@ -87,11 +82,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="module.go" pinned="false" current-in-tab="false">
+      <file leaf-file-name="module.go" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/types/module.go">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="270">
-              <caret line="15" column="4" lean-forward="false" selection-start-line="15" selection-start-column="4" selection-end-line="15" selection-end-column="4" />
+              <caret line="15" column="7" lean-forward="false" selection-start-line="15" selection-start-column="7" selection-end-line="15" selection-end-column="7" />
               <folding />
             </state>
           </provider>
@@ -134,8 +129,8 @@
         <option value="$PROJECT_DIR$/modules/channels.go" />
         <option value="$PROJECT_DIR$/modules/outputs.go" />
         <option value="$PROJECT_DIR$/modules/inputs.go" />
-        <option value="$PROJECT_DIR$/types/module.go" />
         <option value="$PROJECT_DIR$/types/context.go" />
+        <option value="$PROJECT_DIR$/types/module.go" />
       </list>
     </option>
   </component>
@@ -656,12 +651,12 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1492840366456</updated>
-      <workItem from="1492840368681" duration="11052000" />
+      <workItem from="1492840368681" duration="11179000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="11052000" />
+    <option name="totallyTimeSpent" value="11179000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="65" y="24" width="1301" height="744" extended-state="6" />
@@ -799,18 +794,18 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/types/module.go">
+    <entry file="file://$PROJECT_DIR$/types/context.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
-          <caret line="15" column="4" lean-forward="false" selection-start-line="15" selection-start-column="4" selection-end-line="15" selection-end-column="4" />
+        <state relative-caret-position="201">
+          <caret line="18" column="7" lean-forward="false" selection-start-line="18" selection-start-column="7" selection-end-line="18" selection-end-column="7" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/types/context.go">
+    <entry file="file://$PROJECT_DIR$/types/module.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="129">
-          <caret line="23" column="0" lean-forward="false" selection-start-line="23" selection-start-column="0" selection-end-line="23" selection-end-column="0" />
+        <state relative-caret-position="270">
+          <caret line="15" column="7" lean-forward="false" selection-start-line="15" selection-start-column="7" selection-end-line="15" selection-end-column="7" />
           <folding />
         </state>
       </provider>
