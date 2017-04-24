@@ -19,12 +19,18 @@ type Configure struct {
      commandType  int
      moduleType   int64
      value        interface{}
-/*
+
      Event        chan *Event
 
      Handle
-     */
      Parser
+}
+
+type Handle interface {
+    Get() int
+    Set() int
+
+    GetType() unsafe.Pointer
 }
 
 type Parser interface {
@@ -70,7 +76,7 @@ func (c *Configure) SetValue(value interface{}) int {
 func (c *Configure) GetValue() interface{} {
     return c.value
 }
-/*
+
 func (c *Configure) SetHandle(handle Handle) int {
     if handle == nil {
        return Error
@@ -88,7 +94,6 @@ func (c *Configure) GetHandle() Handle {
 
     return c.Handle
 }
-*/
 
 func (c *Configure) SetParser(parser Parser) int {
     if parser == nil {
@@ -108,13 +113,15 @@ func (c *Configure) GetParser() Parser {
     return c.Parser
 }
 
-/*
-func (c *Configure) Materialized(cycle *Cycle, modules []*Module) int {
+func (c *Configure) Materialized(/*cycle *Cycle,*/ modules []Moduleable) int {
     if c.value == nil {
         content := c.GetBytes()
+
         if content == nil {
-            log.Error("configure content: %s, filename: %s, size: %d\n",
+            /*
+            c.Error("configure content: %s, filename: %s, size: %d\n",
                       content, c.GetFileName(), c.GetSize())
+                      */
             c.Error("configure content: %s, size: %d\n",
                       content, c.GetSize())
 
@@ -131,11 +138,11 @@ func (c *Configure) Materialized(cycle *Cycle, modules []*Module) int {
     case []interface{} :
         for _, value := range v {
             c.value = value
-            c.Materialized(cycle, modules)
+            c.Materialized(/*cycle, */modules)
         }
 
     case map[interface{}]interface{}:
-        if c.doParse(v, cycle, modules) == Error {
+        if c.doParse(v, /*cycle,*/ modules) == Error {
             return Error
         }
 
@@ -146,7 +153,7 @@ func (c *Configure) Materialized(cycle *Cycle, modules []*Module) int {
     return Ok
 }
 
-func (c *Configure) doParse(materialized map[interface{}]interface{}, cycle *Cycle, m []*Module) int {
+func (c *Configure) doParse(materialized map[interface{}]interface{}, /*cycle *Cycle,*/ m []Moduleable) int {
     flag := Ok
 
     modules := GetPartModules(m, c.moduleType)
@@ -163,9 +170,9 @@ func (c *Configure) doParse(materialized map[interface{}]interface{}, cycle *Cyc
         found := false
 
         for m := 0; flag != Error && !found && modules[m] != nil; m++ {
-            module := modules[m]
+            module := modules[m].Type()
 
-            commands := module.Commands;
+            commands := module.Commands
             if commands == nil {
                 continue;
             }
@@ -177,18 +184,21 @@ func (c *Configure) doParse(materialized map[interface{}]interface{}, cycle *Cyc
                 if len(name) == command.Name.Len &&
                         name == command.Name.Data.(string) {
 
-                				found = true;
+                				found = true
 
-                    context := cycle.GetContext(module.Index)
+                    //context := cycle.GetContext(module.Index)
+                    var data *unsafe.Pointer
+                    if handle := module.Context; handle != nil {
+                        if context := handle.Contexts(); context != nil {
+                            if this := context.GetData(module.Index); this != nil {
+                                data = this
+                            }
+                        }
+                    }
 
                     c.value = value
 
-																    if cycle.SetConfigure(c) == Error {
-                        flag = Error
-																				    break
-                    }
-
-                    command.Set(cycle, &command, context)
+                    command.Set(c, &command, data)
                 }
             }
         }
@@ -200,7 +210,6 @@ func (c *Configure) doParse(materialized map[interface{}]interface{}, cycle *Cyc
 
     return ConfigOk
 }
-*/
 
 func (c *Configure) Block(module int64, config int) int {
     /*

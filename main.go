@@ -4,36 +4,100 @@ import (
     . "github.com/rookie-xy/main/types"
 
     _ "github.com/rookie-xy/main/modules"
+
+    _ "github.com/rookie-xy/module/option/simple/src"
+    _ "github.com/rookie-xy/module/configure/file/src"
+    _ "github.com/rookie-xy/module/configure/yaml/src"
+
     "fmt"
+    "os"
 )
 
-var modules = String{ len(Modules), "modules" }
+var modables = String{ len(Modables), "modables" }
+
+func Init(modables []Moduleable, o *Option) int {
+    modules := GetSomeModules(modables, SYSTEM_MODULE)
+    if modules == nil {
+        return Error
+    }
+
+    for i := 0; modules[i] != nil; i++ {
+        if module := modules[i]; module != nil {
+            module.Init(o)
+        }
+    }
+
+    c := NewConfigure(o.Log)
+
+    for i := 0; modules[i] != nil; i++ {
+        if module := modules[i]; module != nil {
+            module.Main(c)
+        }
+    }
+
+    select {
+
+    case e := <- c.Event:
+        if op := e.GetOpcode(); op != LOAD {
+            return Ignore
+        }
+    }
+
+    if Block(c, modables, CONFIG_MODULE, CONFIG_BLOCK) == Error {
+        return Error
+    }
+
+    return Ok
+}
+
+func Main(modules []Moduleable, c *Configure) {
+    for i := 0; modules[i] != nil; i++ {
+        module := modules[i]
+        module.Main(c)
+    }
+}
+
+func Exit(modules []Moduleable) {
+    for i := 0; modules[i] != nil; i++ {
+        module := modules[i]
+        module.Exit()
+    }
+}
+
+func Monitor() {
+
+}
 
 func main() {
     log := NewLog()
 
-    if modules.Len < 1 {
-        log.Warn("have not found:", modules.Data)
-        fmt.Println("have not found:", modules.Data)
+    if modables.Len < 1 {
+        //log.Warn("have not found:", modables.Data)
+        fmt.Printf("[%s]have not found\n", modables.Data)
         return
     }
 
-    Modules = Load(Modules, nil)
-    for i := 0; Modules[i] != nil; i++ {
-        module := Modules[i]
-        module.Type().SetIndex(uint(i))
-        //Modules[count].Index = uint(count)
+    Modables = Load(Modables, nil)
+    for i := 0; Modables[i] != nil; i++ {
+        if modable := Modables[i]; modable != nil {
+            if module := modable.Type(); modable != nil {
+                module.SetIndex(i)
+            }
+        }
     }
 
-    configure := NewConfigure(log)
+    option := NewOption(log)
+    if option.SetArgs(len(os.Args), os.Args) == Error {
+        return
+    }
 
-    Init(Modules, configure)
+    Init(Modables, option)
 
-    channel := NewChannel()
+    //configure := NewConfigure(log)
 
-    Main(Modules, channel)
+    //Main(Modables, configure)
 
-/*    Monitor() */
+    Monitor()
 
-    Exit(Modules)
+    //Exit(Modables)
 }

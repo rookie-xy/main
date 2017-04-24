@@ -27,21 +27,20 @@ type InputsCtx struct {
 var input = String{ len("input"), "input" }
 var inputContext = &InputsCtx{
     Context: &Context{
-        input,
-        nil,
+        Name: input,
     },
 }
 
-func (ic *InputsCtx) Create() int {
+func (ic *InputsCtx) Create() unsafe.Pointer {
+    return nil
+}
+
+func (ic *InputsCtx) Insert(p *unsafe.Pointer) int {
     return Ok
 }
 
-func (ic *InputsCtx) Insert() int {
-    return Ok
-}
-
-func (ic *InputsCtx) Type() *Context {
-    return ic.Context
+func (ic *InputsCtx) Contexts() *Context {
+    return ic.Get()
 }
 
 var inputs = String{ len("inputs"), "inputs" }
@@ -58,14 +57,12 @@ var inputCommands = []Command{
 }
 
 func inputsBlock(cfg *Configure, _ *Command, _ *unsafe.Pointer) int {
-/*
-    if nil == cycle {
+    if nil == cfg {
         return Error
     }
 
     flag := USER_CONFIG|CONFIG_ARRAY
-    cycle.Block(cycle, INPUT_MODULE, flag)
-    */
+    Block(cfg, Modables, INPUT_MODULE, flag)
 
     return Ok
 }
@@ -75,7 +72,6 @@ var inputsModule = &Inputs{
         Module: &Module{
             MODULE_V1,
             CONTEXT_V1,
-            //unsafe.Pointer(inputContext),
 								    inputContext,
             inputCommands,
             CONFIG_MODULE,
@@ -83,12 +79,12 @@ var inputsModule = &Inputs{
     },
 }
 
-func (i *Inputs) Init(c *Configure) int {
+func (i *Inputs) Init(o *Option) int {
     fmt.Println("inputs init")
     return Ok
 }
 
-func (i *Inputs) Main(c *Channel) int {
+func (i *Inputs) Main(c *Configure) int {
     fmt.Println("inputs main")
     return Ok
 }
@@ -99,9 +95,9 @@ func (i *Inputs) Exit() int {
 }
 
 func (i *Inputs) Type() *Module {
-    return i.Module
+    return i.Self()
 }
 
 func init() {
-    Modules = Load(Modules, inputsModule)
+    Modables = Load(Modables, inputsModule)
 }

@@ -27,21 +27,20 @@ type ChannelsCtx struct {
 var channel = String{ len("channel"), "channel" }
 var channelContext = &ChannelsCtx{
     Context: &Context{
-        channel,
-        nil,
+        Name: channel,
     },
 }
 
-func (cc *ChannelsCtx) Create() int {
+func (cc *ChannelsCtx) Create() unsafe.Pointer {
+    return nil
+}
+
+func (cc *ChannelsCtx) Insert(p *unsafe.Pointer) int {
     return Ok
 }
 
-func (cc *ChannelsCtx) Insert() int {
-    return Ok
-}
-
-func (cc *ChannelsCtx) Type() *Context {
-    return cc.Context
+func (cc *ChannelsCtx) Contexts() *Context {
+    return cc.Get()
 }
 
 var channels = String{ len("channels"), "channels" }
@@ -58,15 +57,13 @@ var channelCommands = []Command{
 }
 
 func channelsBlock(cfg *Configure, _ *Command, _ *unsafe.Pointer) int {
-    /*
-    if nil == cycle {
-        cycle.Error("channels block error")
+    if nil == cfg {
+        cfg.Error("channels block error")
         return Error
     }
 
     flag := USER_CONFIG|CONFIG_ARRAY
-    cycle.Block(cycle, CHANNEL_MODULE, flag)
-    */
+    Block(cfg, Modables, CHANNEL_MODULE, flag)
 
     return Ok
 }
@@ -75,7 +72,6 @@ var channelsModule = &Channels{
     Module: &Module{
 				    MODULE_V1,
 				    CONTEXT_V1,
-				    //unsafe.Pointer(channelContext),
         channelContext,
 				    channelCommands,
         CONFIG_MODULE,
@@ -84,12 +80,12 @@ var channelsModule = &Channels{
     Channel: NewChannel(),
 }
 
-func (c *Channels) Init(cfg *Configure) int {
+func (c *Channels) Init(o *Option) int {
     fmt.Println("channels init")
     return Ok
 }
 
-func (c *Channels) Main(ch *Channel) int {
+func (c *Channels) Main(cfg *Configure) int {
     fmt.Println("channels main")
     return Ok
 }
@@ -100,9 +96,9 @@ func (c *Channels) Exit() int {
 }
 
 func (c *Channels) Type() *Module {
-    return c.Module
+    return c.Self()
 }
 
 func init() {
-    Modules = Load(Modules, channelsModule)
+    Modables = Load(Modables, channelsModule)
 }

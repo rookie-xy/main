@@ -10,36 +10,64 @@ import (
 
 type Context struct {
     Name   String
-    P     *unsafe.Pointer
+    Data   [1024]*unsafe.Pointer
 }
 
 type Contextable interface {
-    Create() int
+    Create() unsafe.Pointer
     Insert(p *unsafe.Pointer) int
-    Self() *Context
+
+    Contexts() *Context
 }
 
 func NewContext() *Context {
     return &Context{
-        "context",
-        nil,
+        Name: String{ len("context"), "context" },
     }
 }
 
-func (c *Context) Block(cfg *Configure, modules []Moduleable, modType int64, cfgType int) int {
-    for m := 0; modules[m] != nil; m++ {
-        module := modules[m].Type()
+func (r *Context) Get() *Context {
+    return r
+}
+
+func (r *Context) Set(c *Context) int {
+    /*
+    if c == nil {
+        return Error
+    }
+
+    r = c
+    */
+    return Ok
+}
+
+func (c *Context) SetData(index int, p *unsafe.Pointer) int {
+    c.Data[index] = p
+    return Ok
+}
+
+func (c *Context) GetData(index int) *unsafe.Pointer {
+    return c.Data[index]
+}
+
+func Block(cfg *Configure, modables []Moduleable, modType int64, cfgType int) int {
+    for m := 0; modables[m] != nil; m++ {
+        module := modables[m].Type()
 
         if module.Type != modType {
             continue
         }
 
         if handle := module.Context; handle != nil {
-            if this := handle.Create(); this != Error {
-                handle.Type().P[module.CtxIndex] = this
+            if this := handle.Create(); this != nil {
+                if context := handle.Contexts(); context != nil {
+                    if context.SetData(module.CtxIndex, &this) == Error {
+                        return Error
+                    }
+                }
 
             } else {
-                return this
+                return Error
             }
 
         } else {
@@ -47,8 +75,7 @@ func (c *Context) Block(cfg *Configure, modules []Moduleable, modType int64, cfg
         }
     }
 
-    configure := cfg.GetConfigure()
-    if configure == nil {
+    if cfg == nil {
         return Error
     }
 
@@ -60,21 +87,23 @@ func (c *Context) Block(cfg *Configure, modules []Moduleable, modType int64, cfg
         return Error
     }
 
-    if cfg.Materialized(modules) == Error {
+    if cfg.Materialized(modables) == Error {
         return Error
     }
 
-    for m := 0; modules[m] != nil; m++ {
-        module := modules[m].Type()
+    for m := 0; modables[m] != nil; m++ {
+        module := modables[m].Type()
         if module.Type != modType {
             continue
         }
 
         if handle := module.Context; handle != nil {
-            context := handle.Type().P[module.CtxIndex]
-
-            if this := handle.Insert(context); this == Error {
-												    return this
+            if context := handle.Contexts(); context != nil {
+                if this := context.GetData(module.CtxIndex); this != nil {
+                    if handle.Insert(this) == Error {
+                        return Error
+                    }
+                }
             }
 
         } else {
