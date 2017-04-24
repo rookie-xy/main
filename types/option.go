@@ -8,6 +8,7 @@ import "fmt"
 
 type Option struct {
     *Log
+    *Configure
 
      argc   int
      argv   []string
