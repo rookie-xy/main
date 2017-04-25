@@ -14,11 +14,7 @@ type Option struct {
      argv   []string
      items  map[string]interface{}
 
-     option Optionable
-}
-
-type Optionable interface {
-    Parser() int
+     option Optioner
 }
 
 func NewOption(log *Log) *Option {
@@ -55,7 +51,7 @@ func (o *Option) GetItem(k string) interface{} {
     return o.items[k]
 }
 
-func (o *Option) Set(option Optionable) int {
+func (o *Option) Set(option Optioner) int {
     if option == nil {
         return Error
     }
@@ -65,7 +61,7 @@ func (o *Option) Set(option Optionable) int {
     return Ok
 }
 
-func (o *Option) Get() Optionable {
+func (o *Option) Get() Optioner {
     return o.option
 }
 

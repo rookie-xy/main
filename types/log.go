@@ -13,11 +13,8 @@ type Log struct {
 
      level  int
      path   string
-     log    LogIf
-}
 
-type LogIf interface {
-    Dump() int
+     Loger
 }
 
 const (
@@ -75,18 +72,18 @@ func (l *Log) GetPath() string {
     return l.path
 }
 
-func (l *Log) Set(log LogIf) int {
+func (l *Log) Set(log Loger) int {
     if log == nil {
         return Error
     }
 
-    l.log = log
+    l.Loger = log
 
     return Ok
 }
 
-func (l *Log) Get() LogIf {
-    return l.log
+func (l *Log) Get() Loger {
+    return l.Loger
 }
 
 func (l *Log) print(format string, p ...interface{}) int {

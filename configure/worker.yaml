@@ -1,0 +1,54 @@
+logs:
+    - mlog:
+          level: info
+          path: /data/logs/worker.log
+
+inputs:
+    - stdin:
+          status: on
+          channel: "input_channel_name_1"
+          #codec: "plain"
+
+    - stdin:
+          status: on
+          channel: "input_channel_name_2"
+
+    - httpd:
+          listen: 127.0.0.1:9756
+          timeout: 10
+
+          location:
+              document: /home/go/src/github.com/rookie-xy/web
+              bufsize: 2048
+
+channels:
+    - memory:
+          name: "test_memory_2"
+          size: 2048
+
+    - memory:
+          name: "test_memory_1"
+          size: 2048
+
+outputs:
+    - stdout:
+          status: on
+          channel: "output_channel_name_1"
+
+    - stdout:
+          status: on
+          channel: "output_channel_name_2"
+
+#codecs:
+#    plain: "text"
+
+#    multiline:
+#        match: "^{ISO_9002_TIMESTAMP}"
+#        previous: ""
+#        next: ""
+
+#filters:
+#    - grok:
+#          pattern:
+#              - "{LOG_LEVEL} -"
+#              - "{STRING} -"

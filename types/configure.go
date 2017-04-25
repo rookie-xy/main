@@ -6,6 +6,7 @@ package types
 
 import (
     "unsafe"
+    "errors"
 )
 
 var (
@@ -22,26 +23,16 @@ type Configure struct {
 
      Event        chan *Event
 
-     Handle
+     Channeler
+
      Parser
-}
-
-type Handle interface {
-    Get() int
-    Set() int
-
-    GetType() unsafe.Pointer
-}
-
-type Parser interface {
-    Marshal(in interface{}) ([]byte, error)
-    Unmarshal(in []byte, out interface{}) int
+     Configurer
 }
 
 func NewConfigure(log *Log) *Configure {
     return &Configure{
         File:  NewFile(log),
-        //Event: make(chan *Event),
+        Event: make(chan *Event),
     }
 }
 
@@ -77,25 +68,37 @@ func (c *Configure) GetValue() interface{} {
     return c.value
 }
 
-func (c *Configure) SetHandle(handle Handle) int {
-    if handle == nil {
+func (c *Configure) NewConfigurer(cr Configurer) int {
+    if cr == nil {
        return Error
     }
 
-    c.Handle = handle
+    c.Configurer = cr
 
     return Ok
 }
 
-func (c *Configure) GetHandle() Handle {
-    if c.Handle == nil {
-        return nil
+func (c *Configure) SetConfigure() int {
+    if handler := c.Configurer; handler != nil {
+        return handler.SetConfigure()
     }
 
-    return c.Handle
+    c.Warn("set configure not found")
+
+    return Error
 }
 
-func (c *Configure) SetParser(parser Parser) int {
+func (c *Configure) GetConfigure() int {
+    if handler := c.Configurer; handler != nil {
+        return handler.GetConfigure()
+    }
+
+    c.Warn("get configure not found")
+
+    return Error
+}
+
+func (c *Configure) NewParser(parser Parser) int {
     if parser == nil {
        return Error
     }
@@ -105,15 +108,25 @@ func (c *Configure) SetParser(parser Parser) int {
     return Ok
 }
 
-func (c *Configure) GetParser() Parser {
-    if c.Parser == nil {
-        return nil
+func (c *Configure) Marshal(in interface{}) ([]byte, error) {
+    if handler := c.Parser; handler != nil {
+        return handler.Marshal(in)
     }
 
-    return c.Parser
+    return nil, errors.New("Marshal default not found")
 }
 
-func (c *Configure) Materialized(/*cycle *Cycle,*/ modules []Moduleable) int {
+func (c *Configure) Unmarshal(in []byte, out interface{}) int {
+    if handler := c.Parser; handler != nil {
+        return handler.Unmarshal(in, out)
+    }
+
+    c.Warn("Unmarshal default not found")
+
+    return Error
+}
+
+func (c *Configure) Materialized(modules []Moduler) int {
     if c.value == nil {
         content := c.GetBytes()
 
@@ -153,7 +166,7 @@ func (c *Configure) Materialized(/*cycle *Cycle,*/ modules []Moduleable) int {
     return Ok
 }
 
-func (c *Configure) doParse(materialized map[interface{}]interface{}, /*cycle *Cycle,*/ m []Moduleable) int {
+func (c *Configure) doParse(materialized map[interface{}]interface{}, m []Moduler) int {
     flag := Ok
 
     modules := GetPartModules(m, c.moduleType)
@@ -290,23 +303,4 @@ func SetNumber(cfg *Configure, cmd *Command, p *unsafe.Pointer) int {
     return Error
 }
 
-/* default impl */
-func (c *Configure) Set() int {
-    c.Warn("configure handle set")
-    return Ok
-}
 
-func (c *Configure) Get() int {
-    c.Warn("configure content set")
-    return Ok
-}
-
-func (c *Configure) Marshal(in interface{}) ([]byte, error) {
-    c.Warn("configure Marshal")
-    return nil, nil
-}
-
-func (c *Configure) Unmarshal(in []byte, out interface{}) int {
-    c.Warn("configure Unmarshal")
-    return Ok
-}

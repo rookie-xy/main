@@ -16,7 +16,6 @@ const (
 )
 
 type Channels struct {
-    *Channel
     *Module
 }
 
@@ -63,21 +62,19 @@ func channelsBlock(cfg *Configure, _ *Command, _ *unsafe.Pointer) int {
     }
 
     flag := USER_CONFIG|CONFIG_ARRAY
-    Block(cfg, Modables, CHANNEL_MODULE, flag)
+    Block(cfg, Modulers, CHANNEL_MODULE, flag)
 
     return Ok
 }
 
 var channelsModule = &Channels{
-    Module: &Module{
+    &Module{
 				    MODULE_V1,
 				    CONTEXT_V1,
         channelContext,
 				    channelCommands,
         CONFIG_MODULE,
 				},
-
-    Channel: NewChannel(),
 }
 
 func (c *Channels) Init(o *Option) int {
@@ -100,5 +97,5 @@ func (c *Channels) Type() *Module {
 }
 
 func init() {
-    Modables = Load(Modables, channelsModule)
+    Modulers = Load(Modulers, channelsModule)
 }

@@ -1,111 +1,102 @@
 package types
 
-
 type Module struct {
     CtxIndex   int
     Index      int
-    Context    Contextable
+    Context    Contexter
     Commands   []Command
     Type       int64
 }
 
-type Moduleable interface {
-    Init(o *Option) int
-    Main(c *Configure) int
-    Exit() int
-    Type() *Module
-}
-
-var Modables []Moduleable
+var Modulers []Moduler
 
 func (m *Module) Self() *Module {
     return m
 }
 
-func Load(modules []Moduleable, module Moduleable) []Moduleable {
-    if modules == nil && module == nil {
+func Load(modulers []Moduler, moduler Moduler) []Moduler {
+    if modulers == nil && moduler == nil {
         return nil
     }
 
-    modules = append(modules, module)
+    modulers = append(modulers, moduler)
 
-    return modules
+    return modulers
 }
-
 
 func (m *Module) SetIndex(i int) {
     m.Index = i
 }
 
-func GetSomeModules(modable []Moduleable, modType int64) []Moduleable {
-    var modules []Moduleable
+func GetSomeModules(m []Moduler, modType int64) []Moduler {
+    var modulers []Moduler
 
-    for i := 0; modable[i] != nil; i++ {
-        module := modable[i].Type()
+    for i := 0; m[i] != nil; i++ {
+        module := m[i].Type()
 
         if module.Type == modType {
-            modules = Load(modules, modable[i])
+            modulers = Load(modulers, m[i])
         }
     }
 
-    modules = Load(modules, nil)
+    modulers = Load(modulers, nil)
 
-    return modules
+    return modulers
 }
 
-func GetSpacModules(modables []Moduleable) []Moduleable {
-    var modules []Moduleable
+func GetSpacModules(m []Moduler) []Moduler {
+    var modulers []Moduler
 
-    for i := 0; modables[i] != nil; i++ {
-        module := modables[i].Type()
+    for i := 0; m[i] != nil; i++ {
+        module := m[i].Type()
 
         if module.Type == SYSTEM_MODULE ||
            module.Type == CONFIG_MODULE {
             continue
         }
 
-        modules = Load(modules, modables[i])
+        modulers = Load(modulers, m[i])
     }
 
-    modules = Load(modules, nil)
+    modulers = Load(modulers, nil)
 
-    return modules
+    return modulers
 }
 
-func GetPartModules(modables []Moduleable, modType int64) []Moduleable {
-    if modables == nil || len(modables) <= 0 {
+func GetPartModules(m []Moduler, modType int64) []Moduler {
+    if m == nil || len(m) <= 0 {
         return nil
     }
 
     switch modType {
 
     case SYSTEM_MODULE:
-        modules := GetSomeModules(modables, modType)
-        if modules != nil {
-            return modules
+        modulers := GetSomeModules(m, modType)
+        if modulers != nil {
+            return modulers
         }
 
     case CONFIG_MODULE:
-        modules := GetSomeModules(modables, modType)
-        if modules != nil {
-            return modules
+        modulers := GetSomeModules(m, modType)
+        if modulers != nil {
+            return modulers
         }
     }
 
-    var modules []Moduleable
+    var modulers []Moduler
 
     modType = modType >> 28
 
-    for i := 0; modables[i] != nil; i++ {
-        module := modables[i].Type()
+    for i := 0; m[i] != nil; i++ {
+        module := m[i].Type()
         moduleType := module.Type >> 28
 
         if moduleType == modType {
-            modules = Load(modules, modables[i])
+            modulers = Load(modulers, m[i])
         }
     }
 
-    modules = Load(modules, nil)
+    modulers = Load(modulers, nil)
 
-    return modules
+    return modulers
 }

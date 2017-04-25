@@ -4,29 +4,27 @@ package types
 type Channel struct {
     name string
 
-    Channelable
+    Channeler
 }
 
-type Channelable interface {
-    Push(e *Event) int
-    Pull() *Event
-}
-
-func NewChannel() *Channel {
-    return &Channel{}
+func NewChannel(ch Channeler) *Channel {
+    return &Channel{
+        "channel",
+        ch,
+    }
 }
 
 func (c *Channel) Push(e *Event) int {
-    if method := c.Channelable; method != nil {
-        return method.Push(e)
+    if handler := c.Channeler; handler != nil {
+        return handler.Push(e)
     }
 
     return Ok
 }
 
 func (c *Channel) Pull() *Event {
-    if method := c.Channelable; method != nil {
-        return method.Pull()
+    if handler := c.Channeler; handler != nil {
+        return handler.Pull()
     }
 
     return nil

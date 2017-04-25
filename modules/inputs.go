@@ -13,11 +13,7 @@ const (
 )
 
 type Inputs struct {
-    *Channels
-}
-
-type Inputable interface {
-
+    *Module
 }
 
 type InputsCtx struct {
@@ -62,20 +58,18 @@ func inputsBlock(cfg *Configure, _ *Command, _ *unsafe.Pointer) int {
     }
 
     flag := USER_CONFIG|CONFIG_ARRAY
-    Block(cfg, Modables, INPUT_MODULE, flag)
+    Block(cfg, Modulers, INPUT_MODULE, flag)
 
     return Ok
 }
 
 var inputsModule = &Inputs{
-    Channels: &Channels{
-        Module: &Module{
-            MODULE_V1,
-            CONTEXT_V1,
-								    inputContext,
-            inputCommands,
-            CONFIG_MODULE,
-        },
+    Module: &Module{
+        MODULE_V1,
+        CONTEXT_V1,
+				    inputContext,
+        inputCommands,
+        CONFIG_MODULE,
     },
 }
 
@@ -99,5 +93,5 @@ func (i *Inputs) Type() *Module {
 }
 
 func init() {
-    Modables = Load(Modables, inputsModule)
+    Modulers = Load(Modulers, inputsModule)
 }

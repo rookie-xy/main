@@ -1,0 +1,21 @@
+log:
+    name: log
+    level: info
+    path: /data/logs/error.log
+
+inputs:
+    web:
+        listen: 192.168.1.1
+        location: /static/
+
+chananl:
+    type: memory
+    size: 8192
+
+outputs:
+    zookeeper:
+        address: 192.168.1.1:2181
+
+location:
+    html: /data/service/html
+    timeout: 10

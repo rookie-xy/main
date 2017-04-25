@@ -1,0 +1,14 @@
+logs:
+    - mlog:
+          level: "info"
+          path: "/data/logs/worker.log"
+
+
+inputs:
+    - httpd:
+          listen: "127.0.0.1:8900"
+          timeout: 10
+
+          location:
+              document: "/home/go/src/github.com/rookie-xy/web"
+              bufsize: 2048

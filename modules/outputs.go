@@ -16,11 +16,7 @@ const (
 )
 
 type Outputs struct {
-    *Channels
-}
-
-type Outputable interface {
-
+    *Module
 }
 
 type OutputsCtx struct {
@@ -65,13 +61,12 @@ func outputsBlock(cfg *Configure, _ *Command, _ *unsafe.Pointer) int {
     }
 
     flag := USER_CONFIG|CONFIG_ARRAY
-    Block(cfg, Modables, OUTPUT_MODULE, flag)
+    Block(cfg, Modulers, OUTPUT_MODULE, flag)
 
     return Ok
 }
 
 var outputsModule = &Outputs{
-    Channels: &Channels{
         Module: &Module{
             MODULE_V1,
             CONTEXT_V1,
@@ -79,7 +74,6 @@ var outputsModule = &Outputs{
             outputCommands,
             CONFIG_MODULE,
         },
-    },
 }
 
 func (o *Outputs) Init(opt *Option) int {
@@ -102,5 +96,5 @@ func (o *Outputs) Type() *Module {
 }
 
 func init() {
-    Modables = Load(Modables, outputsModule)
+    Modulers = Load(Modulers, outputsModule)
 }

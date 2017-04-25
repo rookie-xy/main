@@ -13,13 +13,6 @@ type Context struct {
     Data   [1024]*unsafe.Pointer
 }
 
-type Contextable interface {
-    Create() unsafe.Pointer
-    Insert(p *unsafe.Pointer) int
-
-    Contexts() *Context
-}
-
 func NewContext() *Context {
     return &Context{
         Name: String{ len("context"), "context" },
@@ -50,7 +43,7 @@ func (c *Context) GetData(index int) *unsafe.Pointer {
     return c.Data[index]
 }
 
-func Block(cfg *Configure, modables []Moduleable, modType int64, cfgType int) int {
+func Block(cfg *Configure, modables []Moduler, modType int64, cfgType int) int {
     for m := 0; modables[m] != nil; m++ {
         module := modables[m].Type()
 

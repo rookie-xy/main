@@ -14,14 +14,7 @@ type File struct {
      size     int64
      bytes  []byte
 
-     action   IO
-}
-
-type IO interface {
-    Open(name string) int
-    Closer() int
-    Reader() int
-    Writer() int
+     Filer
 }
 
 func NewFile(log *Log) *File {
