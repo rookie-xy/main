@@ -6,6 +6,7 @@ package types
 
 import (
     "unsafe"
+    "fmt"
 )
 
 type Context struct {
@@ -43,13 +44,17 @@ func (c *Context) GetData(index int) *unsafe.Pointer {
     return c.Data[index]
 }
 
-func Block(cfg *Configure, modables []Moduler, modType int64, cfgType int) int {
-    for m := 0; modables[m] != nil; m++ {
-        module := modables[m].Type()
+func Block(c *Configure, m []Moduler, modType int64, cfgType int) int {
+    fmt.Println(len(m))
+    for i := 0; m[i] != nil; i++ {
+        module := m[i].Type()
 
         if module.Type != modType {
             continue
         }
+
+        //fmt.Println("bbbbbbbbbbbbbbb")
+        //modables[m].Main(cfg)
 
         if handle := module.Context; handle != nil {
             if this := handle.Create(); this != nil {
@@ -64,28 +69,29 @@ func Block(cfg *Configure, modables []Moduler, modType int64, cfgType int) int {
             }
 
         } else {
+            m[i].Main(c)
             continue
         }
     }
 
-    if cfg == nil {
+    if c == nil {
         return Error
     }
 
-    if cfg.SetModuleType(modType) == Error {
+    if c.SetModuleType(modType) == Error {
         return Error
     }
 
-    if cfg.SetCommandType(cfgType) == Error {
+    if c.SetCommandType(cfgType) == Error {
         return Error
     }
 
-    if cfg.Materialized(modables) == Error {
+    if c.Materialized(m) == Error {
         return Error
     }
 
-    for m := 0; modables[m] != nil; m++ {
-        module := modables[m].Type()
+    for i := 0; m[i] != nil; i++ {
+        module := m[i].Type()
         if module.Type != modType {
             continue
         }

@@ -18,7 +18,7 @@ const (
 type Channels struct {
     *Module
 }
-
+/*
 type ChannelsCtx struct {
     *Context
 }
@@ -41,6 +41,7 @@ func (cc *ChannelsCtx) Insert(p *unsafe.Pointer) int {
 func (cc *ChannelsCtx) Contexts() *Context {
     return cc.Get()
 }
+*/
 
 var channels = String{ len("channels"), "channels" }
 var channelCommands = []Command{
@@ -71,7 +72,8 @@ var channelsModule = &Channels{
     &Module{
 				    MODULE_V1,
 				    CONTEXT_V1,
-        channelContext,
+        //channelContext,
+        nil,
 				    channelCommands,
         CONFIG_MODULE,
 				},

@@ -9,6 +9,8 @@ import (
     _ "github.com/rookie-xy/plugins/configure/file/src"
     _ "github.com/rookie-xy/plugins/configure/yaml/src"
 
+    _ "github.com/rookie-xy/plugins/inputs/stdin/src"
+
     "fmt"
     "os"
 )

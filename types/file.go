@@ -4,7 +4,9 @@
 
 package types
 
-import "os"
+import (
+    "os"
+)
 
 type File struct {
     *Log

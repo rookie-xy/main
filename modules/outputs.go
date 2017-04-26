@@ -18,7 +18,7 @@ const (
 type Outputs struct {
     *Module
 }
-
+/*
 type OutputsCtx struct {
     *Context
 }
@@ -41,6 +41,7 @@ func (oc *OutputsCtx) Insert(p *unsafe.Pointer) int {
 func (oc *OutputsCtx) Contexts() *Context {
     return oc.Get()
 }
+*/
 
 var outputs = String{ len("outputs"), "outputs" }
 var outputCommands = []Command{
@@ -67,13 +68,14 @@ func outputsBlock(cfg *Configure, _ *Command, _ *unsafe.Pointer) int {
 }
 
 var outputsModule = &Outputs{
-        Module: &Module{
-            MODULE_V1,
-            CONTEXT_V1,
-								    outputContext,
-            outputCommands,
-            CONFIG_MODULE,
-        },
+    Module: &Module{
+        MODULE_V1,
+        CONTEXT_V1,
+				    //outputContext,
+        nil,
+        outputCommands,
+        CONFIG_MODULE,
+    },
 }
 
 func (o *Outputs) Init(opt *Option) int {

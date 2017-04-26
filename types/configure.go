@@ -7,6 +7,7 @@ package types
 import (
     "unsafe"
     "errors"
+    "fmt"
 )
 
 var (
@@ -131,6 +132,7 @@ func (c *Configure) Materialized(modules []Moduler) int {
         content := c.GetBytes()
 
         if content == nil {
+            fmt.Println("kkkkkkkkkkkk")
             /*
             c.Error("configure content: %s, filename: %s, size: %d\n",
                       content, c.GetFileName(), c.GetSize())
@@ -150,6 +152,7 @@ func (c *Configure) Materialized(modules []Moduler) int {
 
     case []interface{} :
         for _, value := range v {
+            fmt.Println(value)
             c.value = value
             c.Materialized(/*cycle, */modules)
         }
@@ -222,16 +225,6 @@ func (c *Configure) doParse(materialized map[interface{}]interface{}, m []Module
     }
 
     return ConfigOk
-}
-
-func (c *Configure) Block(module int64, config int) int {
-    /*
-    if Block(Modules, module, config) == Error {
-        return Error
-    }
-    */
-
-    return Ok
 }
 
 func SetFlag(cfg *Configure, cmd *Command, p *unsafe.Pointer) int {

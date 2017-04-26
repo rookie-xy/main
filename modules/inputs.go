@@ -15,7 +15,7 @@ const (
 type Inputs struct {
     *Module
 }
-
+/*
 type InputsCtx struct {
     *Context
 }
@@ -38,6 +38,7 @@ func (ic *InputsCtx) Insert(p *unsafe.Pointer) int {
 func (ic *InputsCtx) Contexts() *Context {
     return ic.Get()
 }
+*/
 
 var inputs = String{ len("inputs"), "inputs" }
 var inputCommands = []Command{
@@ -67,7 +68,8 @@ var inputsModule = &Inputs{
     Module: &Module{
         MODULE_V1,
         CONTEXT_V1,
-				    inputContext,
+				    //inputContext,
+        nil,
         inputCommands,
         CONFIG_MODULE,
     },
