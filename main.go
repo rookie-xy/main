@@ -23,8 +23,6 @@ func Init(m []Moduler, o *Option) int {
         return Error
     }
 
-    fmt.Println(len(modulers))
-
     for i := 0; modulers[i] != nil; i++ {
         if module := modulers[i]; module != nil {
             if module.Init(o) == Error {
@@ -59,10 +57,12 @@ func Init(m []Moduler, o *Option) int {
     return Ok
 }
 
-func Main(m []Moduler, c *Configure) {
-    for i := 0; m[i] != nil; i++ {
-        module := m[i]
-        module.Main(c)
+func Main(m []Moduler, o *Option) {
+    modules := GetSpacModules(m)
+
+    for i := 0; modules[i] != nil; i++ {
+        module := modules[i]
+        module.Init(o)
     }
 }
 
@@ -106,7 +106,7 @@ func main() {
 
     //configure := NewConfigure(log)
 
-    //Main(Modables, configure)
+    Main(Modulers, option)
 
     Monitor()
 

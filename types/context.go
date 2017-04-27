@@ -6,12 +6,11 @@ package types
 
 import (
     "unsafe"
-    "fmt"
 )
 
 type Context struct {
     Name   String
-    Data   [1024]*unsafe.Pointer
+    Data   [128]*unsafe.Pointer
 }
 
 func NewContext() *Context {
@@ -36,16 +35,24 @@ func (r *Context) Set(c *Context) int {
 }
 
 func (c *Context) SetData(index int, p *unsafe.Pointer) int {
+
+    //c.Data = append(c.Data[index], p)
     c.Data[index] = p
     return Ok
 }
 
 func (c *Context) GetData(index int) *unsafe.Pointer {
+    //return c.Data
     return c.Data[index]
 }
+/*
+func (c *Context) GetDatas() []*unsafe.Pointer {
+    //return c.Data
+    return c.Data
+}
+*/
 
 func Block(c *Configure, m []Moduler, modType int64, cfgType int) int {
-    fmt.Println(len(m))
     for i := 0; m[i] != nil; i++ {
         module := m[i].Type()
 
@@ -53,15 +60,16 @@ func Block(c *Configure, m []Moduler, modType int64, cfgType int) int {
             continue
         }
 
-        //fmt.Println("bbbbbbbbbbbbbbb")
-        //modables[m].Main(cfg)
-
         if handle := module.Context; handle != nil {
             if this := handle.Create(); this != nil {
                 if context := handle.Contexts(); context != nil {
+                    module.CtxIndex++
                     if context.SetData(module.CtxIndex, &this) == Error {
+
                         return Error
                     }
+
+                    //module.CtxIndex++
                 }
 
             } else {
@@ -69,7 +77,6 @@ func Block(c *Configure, m []Moduler, modType int64, cfgType int) int {
             }
 
         } else {
-            m[i].Main(c)
             continue
         }
     }
@@ -90,6 +97,7 @@ func Block(c *Configure, m []Moduler, modType int64, cfgType int) int {
         return Error
     }
 
+    /*
     for i := 0; m[i] != nil; i++ {
         module := m[i].Type()
         if module.Type != modType {
@@ -109,6 +117,7 @@ func Block(c *Configure, m []Moduler, modType int64, cfgType int) int {
             continue
         }
     }
+    */
 
     return Ok
 }

@@ -122,6 +122,8 @@ func (c *Configure) Unmarshal(in []byte, out interface{}) int {
         return handler.Unmarshal(in, out)
     }
 
+    fmt.Println("Unmarshal default not found")
+
     c.Warn("Unmarshal default not found")
 
     return Error
@@ -132,7 +134,6 @@ func (c *Configure) Materialized(modules []Moduler) int {
         content := c.GetBytes()
 
         if content == nil {
-            fmt.Println("kkkkkkkkkkkk")
             /*
             c.Error("configure content: %s, filename: %s, size: %d\n",
                       content, c.GetFileName(), c.GetSize())
@@ -143,7 +144,7 @@ func (c *Configure) Materialized(modules []Moduler) int {
             return Error
         }
 
-        if c.Parser.Unmarshal(content, &c.value) == Error {
+        if c.Unmarshal(content, &c.value) == Error {
             return Error
         }
     }
@@ -152,13 +153,12 @@ func (c *Configure) Materialized(modules []Moduler) int {
 
     case []interface{} :
         for _, value := range v {
-            fmt.Println(value)
             c.value = value
-            c.Materialized(/*cycle, */modules)
+            c.Materialized(modules)
         }
 
     case map[interface{}]interface{}:
-        if c.doParse(v, /*cycle,*/ modules) == Error {
+        if c.doParse(v, modules) == Error {
             return Error
         }
 
@@ -206,7 +206,7 @@ func (c *Configure) doParse(materialized map[interface{}]interface{}, m []Module
                     var data *unsafe.Pointer
                     if handle := module.Context; handle != nil {
                         if context := handle.Contexts(); context != nil {
-                            if this := context.GetData(module.Index); this != nil {
+                            if this := context.GetData(module.CtxIndex); this != nil {
                                 data = this
                             }
                         }
