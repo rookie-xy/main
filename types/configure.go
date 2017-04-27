@@ -202,7 +202,6 @@ func (c *Configure) doParse(materialized map[interface{}]interface{}, m []Module
 
                 				found = true
 
-                    //context := cycle.GetContext(module.Index)
                     var data *unsafe.Pointer
                     if handle := module.Context; handle != nil {
                         if context := handle.Contexts(); context != nil {

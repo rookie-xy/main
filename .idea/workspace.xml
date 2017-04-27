@@ -3,8 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="4c1fcab5-2f10-48da-b8c3-eb8cb356b56e" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/configure/worker.yaml" afterPath="$PROJECT_DIR$/configure/worker.yaml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/main.go" afterPath="$PROJECT_DIR$/main.go" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/types/configure.go" afterPath="$PROJECT_DIR$/types/configure.go" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/types/context.go" afterPath="$PROJECT_DIR$/types/context.go" />
     </list>
@@ -58,11 +56,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="configure.go" pinned="false" current-in-tab="false">
+      <file leaf-file-name="configure.go" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/types/configure.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="227">
-              <caret line="208" column="51" selection-start-line="208" selection-start-column="51" selection-end-line="208" selection-end-column="51" />
+            <state relative-caret-position="2033">
+              <caret line="204" column="0" selection-start-line="204" selection-start-column="0" selection-end-line="204" selection-end-column="0" />
               <folding>
                 <element signature="e#54#100#0" expanded="true" />
               </folding>
@@ -80,11 +78,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="context.go" pinned="false" current-in-tab="true">
+      <file leaf-file-name="context.go" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/types/context.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="105">
-              <caret line="65" column="36" selection-start-line="65" selection-start-column="36" selection-end-line="65" selection-end-column="36" />
+            <state relative-caret-position="17">
+              <caret line="37" column="0" selection-start-line="37" selection-start-column="0" selection-end-line="37" selection-end-column="0" />
               <folding>
                 <element signature="e#54#77#0" expanded="true" />
               </folding>
@@ -127,10 +125,10 @@
         <option value="$PROJECT_DIR$/types/file.go" />
         <option value="$PROJECT_DIR$/../plugins/configure/yaml/src/configure_yaml_module.go" />
         <option value="$PROJECT_DIR$/configure/worker.yaml" />
-        <option value="$PROJECT_DIR$/types/configure.go" />
         <option value="$PROJECT_DIR$/../plugins/option/simple/src/option_simple_module.go" />
         <option value="$PROJECT_DIR$/main.go" />
         <option value="$PROJECT_DIR$/../plugins/inputs/stdin/src/stdin_core_module.go" />
+        <option value="$PROJECT_DIR$/types/configure.go" />
         <option value="$PROJECT_DIR$/types/context.go" />
       </list>
     </option>
@@ -930,12 +928,12 @@
       <workItem from="1493003941343" duration="17723000" />
       <workItem from="1493087124263" duration="16949000" />
       <workItem from="1493172898150" duration="7217000" />
-      <workItem from="1493279658253" duration="10963000" />
+      <workItem from="1493279658253" duration="11763000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="64031000" />
+    <option name="totallyTimeSpent" value="64831000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="65" y="-4" width="1301" height="772" extended-state="6" />
@@ -949,7 +947,7 @@
       <window_info id="Documentation" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="FLOATING" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" x="165" y="124" width="1101" height="572" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.34104937" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.34104937" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -1356,14 +1354,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/configure/worker.yaml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="168">
-          <caret line="8" column="0" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/types/handler.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="132">
@@ -1372,12 +1362,12 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/types/configure.go">
+    <entry file="file://$PROJECT_DIR$/types/context.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="227">
-          <caret line="208" column="51" selection-start-line="208" selection-start-column="51" selection-end-line="208" selection-end-column="51" />
+        <state relative-caret-position="17">
+          <caret line="37" column="0" selection-start-line="37" selection-start-column="0" selection-end-line="37" selection-end-column="0" />
           <folding>
-            <element signature="e#54#100#0" expanded="true" />
+            <element signature="e#54#77#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1400,12 +1390,20 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/types/context.go">
+    <entry file="file://$PROJECT_DIR$/configure/worker.yaml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="65" column="36" selection-start-line="65" selection-start-column="36" selection-end-line="65" selection-end-column="36" />
+        <state relative-caret-position="168">
+          <caret line="8" column="0" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/types/configure.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2033">
+          <caret line="204" column="0" selection-start-line="204" selection-start-column="0" selection-end-line="204" selection-end-column="0" />
           <folding>
-            <element signature="e#54#77#0" expanded="true" />
+            <element signature="e#54#100#0" expanded="true" />
           </folding>
         </state>
       </provider>
