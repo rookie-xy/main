@@ -26,8 +26,6 @@ type Parser interface {
 
 type Contexter interface {
     Create() unsafe.Pointer
-    Insert(p *unsafe.Pointer) int
-
     Contexts() *Context
 }
 

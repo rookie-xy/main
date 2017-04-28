@@ -1,8 +1,8 @@
 package types
 
 type Module struct {
-    CtxIndex   int
     Index      int
+    CtxIndex   int
     Context    Contexter
     Commands   []Command
     Type       int64

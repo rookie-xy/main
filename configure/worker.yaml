@@ -8,6 +8,14 @@ inputs:
           status: on
           channel: "input_channel_name_2"
 
+    - file:
+          host: 10.0.3.31
+          group: customer-gateway-tengine
+          type: program_log_no_muiltline
+          dir: /datasas/logs/customer_gateway
+          #pattern: customer_gateway_access_.*\.log
+          #batch_size: 1000
+
 #codecs:
 #    plain: "text"
 

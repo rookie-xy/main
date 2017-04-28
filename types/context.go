@@ -10,7 +10,7 @@ import (
 
 type Context struct {
     Name   String
-    Data   [128]*unsafe.Pointer
+    Data   [256]*unsafe.Pointer
 }
 
 func NewContext() *Context {
@@ -59,6 +59,7 @@ func Block(c *Configure, m []Moduler, modType int64, cfgType int) int {
             if this := handle.Create(); this != nil {
                 if context := handle.Contexts(); context != nil {
                     module.CtxIndex++
+
                     if context.SetData(module.CtxIndex, &this) == Error {
                         return Error
                     }
@@ -88,28 +89,6 @@ func Block(c *Configure, m []Moduler, modType int64, cfgType int) int {
     if c.Materialized(m) == Error {
         return Error
     }
-
-    /*
-    for i := 0; m[i] != nil; i++ {
-        module := m[i].Type()
-        if module.Type != modType {
-            continue
-        }
-
-        if handle := module.Context; handle != nil {
-            if context := handle.Contexts(); context != nil {
-                if this := context.GetData(module.CtxIndex); this != nil {
-                    if handle.Insert(this) == Error {
-                        return Error
-                    }
-                }
-            }
-
-        } else {
-            continue
-        }
-    }
-    */
 
     return Ok
 }

@@ -11,6 +11,8 @@ import (
 
     _ "github.com/rookie-xy/plugins/inputs/stdin/src"
 
+    _ "github.com/rookie-xy/plugins/inputs/file/src"
+
     "fmt"
     "os"
 )

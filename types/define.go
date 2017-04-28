@@ -13,7 +13,7 @@ var (
 
 const (
     MODULE_V1  = 0
-    CONTEXT_V1 = 0
+    CONTEXT_V1 = -1
 
     SYSTEM_MODULE = 0x10000000
     CONFIG_MODULE = 0xF0000000
