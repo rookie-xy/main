@@ -1,6 +1,5 @@
 package types
 
-
 type Channel struct {
     name string
 

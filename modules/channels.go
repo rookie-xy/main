@@ -72,7 +72,6 @@ var channelsModule = &Channels{
     &Module{
 				    MODULE_V1,
 				    CONTEXT_V1,
-        //channelContext,
         nil,
 				    channelCommands,
         CONFIG_MODULE,

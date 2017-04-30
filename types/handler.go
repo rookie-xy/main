@@ -54,6 +54,14 @@ type Optioner interface {
     Parser() int
 }
 
-type Stringer struct {
+type Stringer interface {
+
+}
+
+type Filter interface {
+
+}
+
+type Codec interface {
 
 }

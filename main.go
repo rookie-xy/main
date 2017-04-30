@@ -10,8 +10,11 @@ import (
     _ "github.com/rookie-xy/plugins/configure/yaml/src"
 
     _ "github.com/rookie-xy/plugins/inputs/stdin/src"
-
     _ "github.com/rookie-xy/plugins/inputs/file/src"
+    _ "github.com/rookie-xy/plugins/channels/memory/src"
+    _ "github.com/rookie-xy/plugins/outputs/stdout/src"
+
+    _ "github.com/rookie-xy/plugins/codecs/multiline/src"
 
     "fmt"
     "os"

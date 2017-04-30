@@ -25,6 +25,8 @@ type Configure struct {
      Event        chan *Event
 
      Channeler
+     Filter
+     Codec
 
      Parser
      Configurer
