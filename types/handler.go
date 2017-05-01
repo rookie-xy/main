@@ -63,5 +63,6 @@ type Filter interface {
 }
 
 type Codec interface {
-
+    Encode() int
+    Decode() int
 }

@@ -18,30 +18,6 @@ const (
 type Channels struct {
     *Module
 }
-/*
-type ChannelsCtx struct {
-    *Context
-}
-
-var channel = String{ len("channel"), "channel" }
-var channelContext = &ChannelsCtx{
-    Context: &Context{
-        Name: channel,
-    },
-}
-
-func (cc *ChannelsCtx) Create() unsafe.Pointer {
-    return nil
-}
-
-func (cc *ChannelsCtx) Insert(p *unsafe.Pointer) int {
-    return Ok
-}
-
-func (cc *ChannelsCtx) Contexts() *Context {
-    return cc.Get()
-}
-*/
 
 var channels = String{ len("channels"), "channels" }
 var channelCommands = []Command{

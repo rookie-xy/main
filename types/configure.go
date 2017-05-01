@@ -184,7 +184,7 @@ func (c *Configure) doParse(materialized map[interface{}]interface{}, m []Module
             flag = Ok
         }
 
-        name := key.(string)
+        name  := key.(string)
         found := false
 
         for m := 0; flag != Error && !found && modules[m] != nil; m++ {

@@ -14,7 +14,8 @@ import (
     _ "github.com/rookie-xy/plugins/channels/memory/src"
     _ "github.com/rookie-xy/plugins/outputs/stdout/src"
 
-    _ "github.com/rookie-xy/plugins/codecs/multiline/src"
+    //_ "github.com/rookie-xy/plugins/codecs/plain/src"
+    //_ "github.com/rookie-xy/plugins/codecs/multiline/src"
 
     "fmt"
     "os"

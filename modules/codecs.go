@@ -7,7 +7,7 @@ package modules
 import (
       "unsafe"
     . "github.com/rookie-xy/main/types"
-"fmt"
+    "fmt"
 )
 
 const (
@@ -21,6 +21,7 @@ type Codecs struct {
 
 func (r *Codecs) Init(o *Option) int {
     fmt.Println("codecs init")
+
     return Ok
 }
 
@@ -39,6 +40,7 @@ func (r *Codecs) Type() *Module {
 }
 
 var codecs = String{ len("codecs"), "codecs" }
+
 var codecCommands = []Command{
 
     { codecs,
