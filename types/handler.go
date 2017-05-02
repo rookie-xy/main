@@ -63,6 +63,8 @@ type Filter interface {
 }
 
 type Codec interface {
+    Init(configure interface{}) int
     Encode() int
     Decode() int
+    Type(name string) int
 }

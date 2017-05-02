@@ -3,7 +3,7 @@
  */
 
 package modules
-
+/*
 import (
       "unsafe"
     . "github.com/rookie-xy/main/types"
@@ -75,3 +75,4 @@ var filterModule = &Filters{
 func init() {
     Modulers = Load(Modulers, filterModule)
 }
+*/

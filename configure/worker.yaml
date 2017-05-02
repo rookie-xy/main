@@ -1,19 +1,28 @@
 inputs:
-    - stdin:
-          status: on
-          channel: "input_channel_name_1"
-          #codec: "plain"
-
-    - stdin:
-          status: on
-          channel: "input_channel_name_2"
+    - file:
+          host: "10.0.3.31"
+          group: "customer-gateway-tengine"
+          type: "program_log_no_muiltline"
+          path: "/datasas/logs/customer_gateway"
+          name:
+              - "customer_gateway_access_*.log"
+              - "customer_gateway_access_*.log2"
+          codec:
+              plain: "text"
 
     - file:
-          host: 10.0.3.31
-          group: customer-gateway-tengine
-          type: program_log_no_muiltline
-          dir: /datasas/logs/customer_gateway
-          suffix: customer_gateway_access_.*\.log
+          host: "10.0.3.32"
+          group: "customer-gateway-tengine2"
+          type: "program_log_no_muiltline2"
+          path: "/datasas/logs/customer_gateway2"
+          name:
+              - "customer_gateway_access_*.log3"
+              - "customer_gateway_access_*.log4"
+          codec:
+              multiline:
+                  match: "^{ISO_9002_TIMESTAMP}"
+                  previous: "hahah"
+                  next: "heiehi"
 
 channels:
     - memory:
@@ -23,6 +32,12 @@ channels:
     - memory:
           name: "test_memory_1"
           size: 2048
+
+#    - filter:
+#          - grok:
+#                pattern:
+#                    - "{LOG_LEVEL} -"
+#                    - "{STRING} -"
 
 outputs:
     - stdout:
@@ -37,7 +52,7 @@ outputs:
 #    plain: "text"
 
 #    multiline:
-#        match: "^{ISO_9002_TIMESTAMP}, ^{ISO_9002_TIMESTAMP}"
+#        match: "^{ISO_9002_TIMESTAMP}"
 #        previous: "hahah"
 #        next: "heiehi"
 

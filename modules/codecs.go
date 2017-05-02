@@ -3,7 +3,7 @@
  */
 
 package modules
-
+/*
 import (
       "unsafe"
     . "github.com/rookie-xy/main/types"
@@ -77,3 +77,4 @@ var codecModule = &Codecs{
 func init() {
     Modulers = Load(Modulers, codecModule)
 }
+*/

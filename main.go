@@ -9,13 +9,13 @@ import (
     _ "github.com/rookie-xy/plugins/configure/file/src"
     _ "github.com/rookie-xy/plugins/configure/yaml/src"
 
-    _ "github.com/rookie-xy/plugins/inputs/stdin/src"
+    //_ "github.com/rookie-xy/plugins/inputs/stdin/src"
     _ "github.com/rookie-xy/plugins/inputs/file/src"
     _ "github.com/rookie-xy/plugins/channels/memory/src"
     _ "github.com/rookie-xy/plugins/outputs/stdout/src"
 
-    //_ "github.com/rookie-xy/plugins/codecs/plain/src"
-    //_ "github.com/rookie-xy/plugins/codecs/multiline/src"
+    _ "github.com/rookie-xy/plugins/codecs/plain/src"
+    _ "github.com/rookie-xy/plugins/codecs/multiline/src"
 
     "fmt"
     "os"
@@ -96,8 +96,8 @@ func main() {
 
     Modulers = Load(Modulers, nil)
     for i := 0; Modulers[i] != nil; i++ {
-        if modable := Modulers[i]; modable != nil {
-            if module := modable.Type(); modable != nil {
+        if moduler := Modulers[i]; moduler != nil {
+            if module := moduler.Type(); moduler != nil {
                 module.SetIndex(i)
             }
         }
@@ -109,8 +109,6 @@ func main() {
     }
 
     Init(Modulers, option)
-
-    //configure := NewConfigure(log)
 
     Main(Modulers, option)
 

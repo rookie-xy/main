@@ -228,15 +228,12 @@ func (c *Configure) doParse(materialized map[interface{}]interface{}, m []Module
     return ConfigOk
 }
 
-func SetFlag(cfg *Configure, cmd *Command, p *unsafe.Pointer) int {
-    if cfg == nil || cmd == nil || p == nil {
+func SetFlag(cfg *Configure, cmd *Command, ptr *unsafe.Pointer) int {
+    if cfg == nil || cmd == nil || ptr == nil {
         return Error
     }
 
-    field := (*bool)(unsafe.Pointer(uintptr(*p) + cmd.Offset))
-    if field == nil {
-        return Error
-    }
+    field := (*bool)(unsafe.Pointer(uintptr(*ptr) + cmd.Offset))
 
     flag := cfg.GetValue()
     if flag == true {
@@ -257,44 +254,63 @@ func SetFlag(cfg *Configure, cmd *Command, p *unsafe.Pointer) int {
     return Ok
 }
 
-func SetString(cfg *Configure, cmd *Command, p *unsafe.Pointer) int {
-    if cfg == nil || cmd == nil || p == nil {
+func SetString(cfg *Configure, cmd *Command, ptr *unsafe.Pointer) int {
+    if cfg == nil || cmd == nil || ptr == nil {
         return Error
     }
 
-    field := (*string)(unsafe.Pointer(uintptr(*p) + cmd.Offset))
-    if field == nil {
+    field := (*string)(unsafe.Pointer(uintptr(*ptr) + cmd.Offset))
+
+    value := cfg.GetValue()
+    if value == nil {
         return Error
     }
 
-    strings := cfg.GetValue()
-    if strings == nil {
-        return Error
-    }
-
-    *field = strings.(string)
+    *field = value.(string)
 
     return Ok
 }
 
-func SetNumber(cfg *Configure, cmd *Command, p *unsafe.Pointer) int {
-    if cfg == nil || cmd == nil || p == nil {
+func SetNumber(cfg *Configure, cmd *Command, ptr *unsafe.Pointer) int {
+    if cfg == nil || cmd == nil || ptr == nil {
         return Error
     }
 
-    field := (*int)(unsafe.Pointer(uintptr(*p) + cmd.Offset))
-    if field == nil {
+    field := (*int)(unsafe.Pointer(uintptr(*ptr) + cmd.Offset))
+
+    value := cfg.GetValue()
+    if value == nil {
         return Error
     }
 
-    number := cfg.GetValue()
-    if number == nil {
-        return Error
-    }
-
-    *field = number.(int)
+    *field = value.(int)
 
     return Error
 }
 
 
+func SetArray(cfg *Configure, cmd *Command, ptr *unsafe.Pointer) int {
+    if cfg == nil || cmd == nil || ptr == nil {
+        return Error
+    }
+
+    field := (*Array)(unsafe.Pointer(uintptr(*ptr) + cmd.Offset))
+
+    value := cfg.GetValue()
+    if value == nil {
+        return Error
+    }
+
+    values := value.([]interface{})
+    length := len(values)
+
+    array := NewArray(length)
+
+    for k, v := range values {
+        array.SetData(k, v)
+    }
+
+    *field = array
+
+    return Ok
+}
