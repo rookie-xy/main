@@ -48,15 +48,17 @@ func SetCodec(cfg *Configure, cmd *Command, ptr *unsafe.Pointer) int {
     var code Code
 
     for k, v := range values {
+        name := k.(string)
+
         for _, codec := range Codecs {
-            if codec.Type(k.(string)) == Ignore {
+            if codec.Type(name) == Ignore {
                 continue
             }
 
             codec.Init(v)
 
             code = NewCode(codec)
-            code.name = k.(string)
+            code.name = name
         }
     }
 

@@ -11,6 +11,17 @@ inputs:
               plain: "text"
 
     - file:
+          host: "192.168.2.11"
+          group: "test"
+          type: "test_type"
+          path: "data/logs/abc/"
+          name:
+              - "pdms_*.log"
+              - "pdms_abc_*.log"
+          codec:
+              plain: "text"
+
+    - file:
           host: "10.0.3.32"
           group: "customer-gateway-tengine2"
           type: "program_log_no_muiltline2"
