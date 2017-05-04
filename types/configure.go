@@ -6,8 +6,6 @@ package types
 
 import (
     "unsafe"
-    "errors"
-    "fmt"
 )
 
 var (
@@ -17,6 +15,7 @@ var (
 
 type Configure struct {
     *File
+    *Code
 
      commandType  int
      moduleType   int64
@@ -26,9 +25,7 @@ type Configure struct {
 
      Channeler
      Filter
-     Codec
 
-     Parser
      Configurer
 }
 
@@ -101,52 +98,21 @@ func (c *Configure) GetConfigure() int {
     return Error
 }
 
-func (c *Configure) NewParser(parser Parser) int {
-    if parser == nil {
-       return Error
-    }
-
-    c.Parser = parser
-
-    return Ok
-}
-
-func (c *Configure) Marshal(in interface{}) ([]byte, error) {
-    if handler := c.Parser; handler != nil {
-        return handler.Marshal(in)
-    }
-
-    return nil, errors.New("Marshal default not found")
-}
-
-func (c *Configure) Unmarshal(in []byte, out interface{}) int {
-    if handler := c.Parser; handler != nil {
-        return handler.Unmarshal(in, out)
-    }
-
-    fmt.Println("Unmarshal default not found")
-
-    c.Warn("Unmarshal default not found")
-
-    return Error
-}
 
 func (c *Configure) Materialized(modules []Moduler) int {
     if c.value == nil {
         content := c.GetBytes()
 
         if content == nil {
-            /*
-            c.Error("configure content: %s, filename: %s, size: %d\n",
-                      content, c.GetFileName(), c.GetSize())
-                      */
             c.Error("configure content: %s, size: %d\n",
                       content, c.GetSize())
 
             return Error
         }
 
-        if c.Unmarshal(content, &c.value) == Error {
+        var e error
+
+        if c.value, e = c.Decode(content); e != nil {
             return Error
         }
     }
@@ -206,10 +172,9 @@ func (c *Configure) doParse(materialized map[interface{}]interface{}, m []Module
 
                     var data *unsafe.Pointer
                     if handle := module.Context; handle != nil {
-                        if context := handle.Contexts(); context != nil {
-                            if this := context.GetData(module.CtxIndex); this != nil {
-                                data = this
-                            }
+                        data = handle.GetDatas()[module.CtxIndex];
+                        if data == nil {
+                            return Error
                         }
                     }
 
@@ -226,6 +191,47 @@ func (c *Configure) doParse(materialized map[interface{}]interface{}, m []Module
     }
 
     return ConfigOk
+}
+
+func Block(c *Configure, m []Moduler, modType int64, cfgType int) int {
+    for i := 0; m[i] != nil; i++ {
+        module := m[i].Type()
+
+        if module.Type != modType {
+            continue
+        }
+
+        if handle := module.Context; handle != nil {
+            if this := handle.Create(); this != nil {
+                module.CtxIndex++
+                handle.GetDatas()[module.CtxIndex] = &this
+
+            } else {
+                return Error
+            }
+
+        } else {
+            continue
+        }
+    }
+
+    if c == nil {
+        return Error
+    }
+
+    if c.SetModuleType(modType) == Error {
+        return Error
+    }
+
+    if c.SetCommandType(cfgType) == Error {
+        return Error
+    }
+
+    if c.Materialized(m) == Error {
+        return Error
+    }
+
+    return Ok
 }
 
 func SetFlag(cfg *Configure, cmd *Command, ptr *unsafe.Pointer) int {

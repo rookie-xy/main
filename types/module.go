@@ -3,7 +3,7 @@ package types
 type Module struct {
     Index      int
     CtxIndex   int
-    Context    Contexter
+    Context    Context
     Commands   []Command
     Type       int64
 }

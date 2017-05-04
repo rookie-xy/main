@@ -2,6 +2,7 @@ package types
 
 import (
     "unsafe"
+    "errors"
 )
 
 type Code struct {
@@ -11,7 +12,7 @@ type Code struct {
 
 func NewCode(c Codec) Code {
     return Code{
-        name: "code",
+        name: "codec",
         Codec: c,
     }
 }
@@ -67,18 +68,18 @@ func SetCodec(cfg *Configure, cmd *Command, ptr *unsafe.Pointer) int {
     return Ok
 }
 
-func (r Code) Encode() int {
+func (r Code) Encode(in interface{}) (interface{}, error) {
     if handler := r.Codec; handler != nil {
-        return handler.Encode()
+        return handler.Encode(in)
     }
 
-    return Ok
+    return nil, errors.New("No found handler")
 }
 
-func (r Code) Decode() int {
+func (r Code) Decode(in []byte) (interface{}, error) {
     if handler := r.Codec; handler != nil {
-        return handler.Decode()
+        return handler.Decode(in)
     }
 
-    return Ok
+    return nil, errors.New("No found handler")
 }

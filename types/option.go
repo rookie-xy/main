@@ -4,8 +4,6 @@
 
 package types
 
-import "fmt"
-
 type Option struct {
     *Log
     *Configure
@@ -49,40 +47,4 @@ func (o *Option) SetItem(k string, v interface{}) {
 
 func (o *Option) GetItem(k string) interface{} {
     return o.items[k]
-}
-
-func (o *Option) Set(option Optioner) int {
-    if option == nil {
-        return Error
-    }
-
-    o.option = option
-
-    return Ok
-}
-
-func (o *Option) Get() Optioner {
-    return o.option
-}
-
-func (o *Option) Materialized() int {
-    if option := o.Get(); option != nil {
-        if option.Parser() == Error {
-            return Error
-        }
-
-        return Ok
-    }
-
-    // default method
-    if o.Parser() == Error {
-        return Error
-    }
-
-    return Ok
-}
-
-func (o *Option) Parser() int {
-    fmt.Println("option type")
-    return Ok
 }

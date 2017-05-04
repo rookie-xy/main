@@ -9,6 +9,11 @@ type Moduler interface {
     Type() *Module
 }
 
+type Context interface {
+    Create() unsafe.Pointer
+    GetDatas() []*unsafe.Pointer
+}
+
 type Channeler interface {
     Push(e *Event) int
     Pull() *Event
@@ -17,16 +22,6 @@ type Channeler interface {
 type Configurer interface {
     GetConfigure() int
     SetConfigure() int
-}
-
-type Parser interface {
-    Marshal(in interface{}) ([]byte, error)
-    Unmarshal(in []byte, out interface{}) int
-}
-
-type Contexter interface {
-    Create() unsafe.Pointer
-    Contexts() *Context
 }
 
 type Cycler interface {
@@ -65,7 +60,7 @@ type Filter interface {
 type Codec interface {
     New() Codec
     Init(configure interface{}) int
-    Encode() int
-    Decode() int
+    Encode(in interface{}) (interface{}, error)
+    Decode(in []byte) (interface{}, error)
     Type(name string) int
 }
