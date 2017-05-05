@@ -6,7 +6,7 @@ type Moduler interface {
     Init(o *Option) int
     Main(c *Configure) int
     Exit() int
-    Type() *Module
+    Self() *Module
 }
 
 type Context interface {

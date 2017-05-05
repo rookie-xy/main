@@ -3,8 +3,6 @@ package main
 import (
     . "github.com/rookie-xy/main/types"
 
-    _ "github.com/rookie-xy/main/modules"
-
     _ "github.com/rookie-xy/plugins/option/simple/src"
     _ "github.com/rookie-xy/plugins/configure/file/src"
 
@@ -22,46 +20,6 @@ import (
 )
 
 var modulers = String{ len(Modulers), "modulers" }
-
-func Init(m []Moduler, o *Option) int {
-    modulers := GetSomeModules(m, SYSTEM_MODULE)
-    if modulers == nil {
-        return Error
-    }
-
-    for i := 0; modulers[i] != nil; i++ {
-        if module := modulers[i]; module != nil {
-            if module.Init(o) == Error {
-                os.Exit(SYSTEM_MODULE)
-            }
-        }
-    }
-
-    var configure *Configure
-    if configure = o.Configure; configure == nil {
-        configure = NewConfigure(o.Log)
-    }
-
-    for i := 0; modulers[i] != nil; i++ {
-        if module := modulers[i]; module != nil {
-            go module.Main(configure)
-        }
-    }
-
-    select {
-
-    case e := <- configure.Event:
-        if op := e.GetOpcode(); op != LOAD {
-            return Ignore
-        }
-    }
-
-    if Block(configure, m, CONFIG_MODULE, CONFIG_BLOCK) == Error {
-        return Error
-    }
-
-    return Ok
-}
 
 func Main(m []Moduler, o *Option) {
     modules := GetSpacModules(m)
@@ -85,11 +43,55 @@ func Monitor() {
     }
 }
 
+var (
+    channels = String{ len("channels"), "channels" }
+    inputs   = String{ len("inputs"), "inputs" }
+    outputs  = String{ len("outputs"), "outputs" }
+)
+
+var programCommands = []Command{
+
+    { channels,
+      CHANNEL_CONFIG,
+      SetChannel,
+      0,
+      0,
+      nil },
+
+
+    { inputs,
+      INPUT_CONFIG,
+      SetInput,
+      0,
+      0,
+      nil },
+
+    { outputs,
+      OUTPUT_CONFIG,
+      SetOutput,
+      0,
+      0,
+      nil },
+
+    NilCommand,
+}
+
+var program = &Module {
+    MODULE_V1,
+    CONTEXT_V1,
+    nil,
+    programCommands,
+    CONFIG_MODULE,
+}
+
+func init() {
+    Modulers = Load(Modulers, program)
+}
+
 func main() {
     log := NewLog()
 
     if modulers.Len < 1 {
-        //log.Warn("have not found:", modables.Data)
         fmt.Printf("[%s]have not found\n", modulers.Data)
         return
     }
@@ -97,7 +99,7 @@ func main() {
     Modulers = Load(Modulers, nil)
     for i := 0; Modulers[i] != nil; i++ {
         if moduler := Modulers[i]; moduler != nil {
-            if module := moduler.Type(); moduler != nil {
+            if module := moduler.Self(); moduler != nil {
                 module.SetIndex(i)
             }
         }
@@ -108,7 +110,9 @@ func main() {
         return
     }
 
-    Init(Modulers, option)
+    program.Init(option)
+
+    //Init(Modulers, option)
 
     Main(Modulers, option)
 

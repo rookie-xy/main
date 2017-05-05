@@ -1,5 +1,10 @@
 package types
 
+import (
+    "fmt"
+    "os"
+)
+
 type Module struct {
     Index      int
     CtxIndex   int
@@ -9,6 +14,64 @@ type Module struct {
 }
 
 var Modulers []Moduler
+
+func (r *Module) Init(o *Option) int {
+     modulers := GetSomeModules(Modulers, SYSTEM_MODULE)
+    if modulers == nil {
+        return Error
+    }
+
+    for i := 0; modulers[i] != nil; i++ {
+        if module := modulers[i]; module != nil {
+            if module.Init(o) == Error {
+                os.Exit(SYSTEM_MODULE)
+            }
+        }
+    }
+
+    var configure *Configure
+    if configure = o.Configure; configure == nil {
+        configure = NewConfigure(o.Log)
+    }
+
+    for i := 0; modulers[i] != nil; i++ {
+        if module := modulers[i]; module != nil {
+            go module.Main(configure)
+        }
+    }
+
+    select {
+
+    case e := <- configure.Event:
+        if op := e.GetOpcode(); op != LOAD {
+            return Ignore
+        }
+    }
+
+    if Block(configure, Modulers, CONFIG_MODULE, CONFIG_BLOCK) == Error {
+        return Error
+    }
+
+    return Ok
+}
+
+func (r *Module) Main(cfg *Configure) int {
+    /*
+    modules := GetSpacModules(Modulers)
+
+    for i := 0; modules[i] != nil; i++ {
+        module := modules[i]
+        module.Init(cfg.Option)
+    }
+    */
+
+    return Ok
+}
+
+func (r *Module) Exit() int {
+    fmt.Println("channels exit")
+    return Ok
+}
 
 func (m *Module) Self() *Module {
     return m
@@ -32,7 +95,7 @@ func GetSomeModules(m []Moduler, modType int64) []Moduler {
     var modulers []Moduler
 
     for i := 0; m[i] != nil; i++ {
-        module := m[i].Type()
+        module := m[i].Self()
 
         if module.Type == modType {
             modulers = Load(modulers, m[i])
@@ -48,7 +111,7 @@ func GetSpacModules(m []Moduler) []Moduler {
     var modulers []Moduler
 
     for i := 0; m[i] != nil; i++ {
-        module := m[i].Type()
+        module := m[i].Self()
 
         if module.Type == SYSTEM_MODULE ||
            module.Type == CONFIG_MODULE {
@@ -88,7 +151,7 @@ func GetPartModules(m []Moduler, modType int64) []Moduler {
     modType = modType >> 28
 
     for i := 0; m[i] != nil; i++ {
-        module := m[i].Type()
+        module := m[i].Self()
         moduleType := module.Type >> 28
 
         if moduleType == modType {

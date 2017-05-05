@@ -119,7 +119,7 @@ func (c *Configure) Materialized(modules []Moduler) int {
 
     switch v := c.value.(type) {
 
-    case []interface{} :
+    case []interface{}:
         for _, value := range v {
             c.value = value
             c.Materialized(modules)
@@ -154,7 +154,7 @@ func (c *Configure) doParse(materialized map[interface{}]interface{}, m []Module
         found := false
 
         for m := 0; flag != Error && !found && modules[m] != nil; m++ {
-            module := modules[m].Type()
+            module := modules[m].Self()
 
             commands := module.Commands
             if commands == nil {
@@ -195,7 +195,7 @@ func (c *Configure) doParse(materialized map[interface{}]interface{}, m []Module
 
 func Block(c *Configure, m []Moduler, modType int64, cfgType int) int {
     for i := 0; m[i] != nil; i++ {
-        module := m[i].Type()
+        module := m[i].Self()
 
         if module.Type != modType {
             continue
@@ -317,6 +317,39 @@ func SetArray(cfg *Configure, cmd *Command, ptr *unsafe.Pointer) int {
     }
 
     *field = array
+
+    return Ok
+}
+
+func SetChannel(cfg *Configure, _ *Command, _ *unsafe.Pointer) int {
+    if nil == cfg {
+        return Error
+    }
+
+    flag := USER_CONFIG|CONFIG_ARRAY
+    Block(cfg, Modulers, CHANNEL_MODULE, flag)
+
+    return Ok
+}
+
+func SetInput(cfg *Configure, _ *Command, _ *unsafe.Pointer) int {
+    if nil == cfg {
+        return Error
+    }
+
+    flag := USER_CONFIG|CONFIG_ARRAY
+    Block(cfg, Modulers, INPUT_MODULE, flag)
+
+    return Ok
+}
+
+func SetOutput(cfg *Configure, _ *Command, _ *unsafe.Pointer) int {
+    if nil == cfg {
+        return Error
+    }
+
+    flag := USER_CONFIG|CONFIG_ARRAY
+    Block(cfg, Modulers, OUTPUT_MODULE, flag)
 
     return Ok
 }
