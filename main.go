@@ -97,11 +97,24 @@ func main() {
     }
 
     Modulers = Load(Modulers, nil)
+/*
     for i := 0; Modulers[i] != nil; i++ {
         if moduler := Modulers[i]; moduler != nil {
             if module := moduler.Self(); moduler != nil {
                 module.SetIndex(i)
             }
+        }
+    }
+    */
+
+    for i, v := range Modulers {
+        if v != nil {
+            if self := v.Self(); self != nil {
+                self.SetIndex(i)
+            }
+
+        } else {
+            continue
         }
     }
 

@@ -194,6 +194,30 @@ func (c *Configure) doParse(materialized map[interface{}]interface{}, m []Module
 }
 
 func Block(c *Configure, m []Moduler, modType int64, cfgType int) int {
+    for _, v := range m {
+        if v != nil {
+            if self := v.Self(); self != nil {
+                if self.Type != modType {
+                    continue
+                }
+
+                if handle := self.Context; handle != nil {
+                    if this := handle.Create(); this != nil {
+                        self.CtxIndex++
+                        handle.GetDatas()[self.CtxIndex] = &this
+
+                    } else {
+                        return Error
+                    }
+
+                } else {
+                    continue
+                }
+            }
+        }
+    }
+
+    /*
     for i := 0; m[i] != nil; i++ {
         module := m[i].Self()
 
@@ -214,6 +238,7 @@ func Block(c *Configure, m []Moduler, modType int64, cfgType int) int {
             continue
         }
     }
+    */
 
     if c == nil {
         return Error
