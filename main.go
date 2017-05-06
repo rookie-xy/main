@@ -1,15 +1,15 @@
 package main
 
 import (
-    . "github.com/rookie-xy/main/types"
+    . "github.com/rookie-xy/worker/types"
 
-    _ "github.com/rookie-xy/plugins/option/simple/src"
-    _ "github.com/rookie-xy/plugins/configure/file/src"
+    _ "github.com/rookie-xy/modules/option/simple/src"
+    _ "github.com/rookie-xy/modules/configure/file/src"
 
     //_ "github.com/rookie-xy/plugins/inputs/stdin/src"
-    _ "github.com/rookie-xy/plugins/inputs/file/src"
-    _ "github.com/rookie-xy/plugins/channels/memory/src"
-    _ "github.com/rookie-xy/plugins/outputs/stdout/src"
+    _ "github.com/rookie-xy/modules/inputs/file/src"
+    _ "github.com/rookie-xy/modules/channels/memory/src"
+    _ "github.com/rookie-xy/modules/outputs/stdout/src"
 
     _ "github.com/rookie-xy/plugins/codecs/plain/src"
     _ "github.com/rookie-xy/plugins/codecs/multiline/src"
