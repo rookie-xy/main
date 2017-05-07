@@ -21,13 +21,20 @@ import (
 
 var modulers = String{ len(Modulers), "modulers" }
 
-func Main(m []Moduler, o *Option) {
-    modules := GetSpacModules(m)
+func Main(o *Option) {
+    modules := GetSpacModules(Modulers)
 
-    for i := 0; modules[i] != nil; i++ {
-        module := modules[i]
-        module.Init(o)
+    for _, v := range modules {
+        if v != nil {
+            if self := v.Self(); self != nil {
+                if v.Init(o) == Error {
+                    /* Error */
+                }
+            }
+        }
     }
+
+    worker.Main(o.Configure)
 }
 
 func Exit(m []Moduler) {
@@ -49,7 +56,7 @@ var (
     outputs  = String{ len("outputs"), "outputs" }
 )
 
-var programCommands = []Command{
+var workerCommands = []Command{
 
     { channels,
       CHANNEL_CONFIG,
@@ -76,16 +83,16 @@ var programCommands = []Command{
     NilCommand,
 }
 
-var program = &Module {
+var worker = &Module {
     MODULE_V1,
     CONTEXT_V1,
     nil,
-    programCommands,
+    workerCommands,
     CONFIG_MODULE,
 }
 
 func init() {
-    Modulers = Load(Modulers, program)
+    Modulers = Load(Modulers, worker)
 }
 
 func main() {
@@ -97,24 +104,12 @@ func main() {
     }
 
     Modulers = Load(Modulers, nil)
-/*
-    for i := 0; Modulers[i] != nil; i++ {
-        if moduler := Modulers[i]; moduler != nil {
-            if module := moduler.Self(); moduler != nil {
-                module.SetIndex(i)
-            }
-        }
-    }
-    */
 
     for i, v := range Modulers {
         if v != nil {
             if self := v.Self(); self != nil {
                 self.SetIndex(i)
             }
-
-        } else {
-            continue
         }
     }
 
@@ -123,13 +118,13 @@ func main() {
         return
     }
 
-    program.Init(option)
+    worker.Init(option)
 
-    //Init(Modulers, option)
+    //worker.Exit()
 
-    Main(Modulers, option)
+    Main(option)
 
     Monitor()
 
-    //Exit(Modables)
+    worker.Exit()
 }

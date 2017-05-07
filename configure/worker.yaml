@@ -49,14 +49,6 @@ outputs:
           status: on
           channel: "output_channel_name_2"
 
-#codecs:
-#    plain: "text"
-
-#    multiline:
-#        match: "^{ISO_9002_TIMESTAMP}"
-#        previous: "hahah"
-#        next: "heiehi"
-
 #filters:
 #    - grok:
 #          pattern:

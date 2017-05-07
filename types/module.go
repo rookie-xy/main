@@ -1,7 +1,6 @@
 package types
 
 import (
-    "fmt"
     "os"
 )
 
@@ -15,25 +14,35 @@ type Module struct {
 
 var Modulers []Moduler
 
+const (
+    INIT = iota
+    MAIN
+    EXIT
+)
+
+var Sentinel = [...]bool{
+    INIT: false,
+    MAIN: false,
+    EXIT: false,
+}
+
 func (r *Module) Init(o *Option) int {
+    if Sentinel[INIT] {
+        return Ok
+    }
+
+    Sentinel[INIT] = true
+
     modulers := GetSomeModules(Modulers, SYSTEM_MODULE)
     if modulers == nil {
         return Error
     }
-/*
-    for i := 0; modulers[i] != nil; i++ {
-        if module := modulers[i]; module != nil {
-            if module.Init(o) == Error {
-                os.Exit(SYSTEM_MODULE)
-            }
-        }
-    }
-    */
+
     for _, v := range modulers {
         if v != nil {
             if self := v.Self(); self != nil {
                 if v.Init(o) == Error {
-                    os.Exit(SYSTEM_MODULE)
+                    os.Exit(0)
                 }
             }
         }
@@ -43,14 +52,6 @@ func (r *Module) Init(o *Option) int {
     if configure = o.Configure; configure == nil {
         configure = NewConfigure(o.Log)
     }
-
-    /*
-    for i := 0; modulers[i] != nil; i++ {
-        if module := modulers[i]; module != nil {
-            go module.Main(configure)
-        }
-    }
-    */
 
     for _, v := range modulers {
         if v != nil {
@@ -68,7 +69,7 @@ func (r *Module) Init(o *Option) int {
         }
     }
 
-    if Block(configure, Modulers, CONFIG_MODULE, CONFIG_BLOCK) == Error {
+    if Block(configure, Modulers, r.Type, CONFIG_BLOCK) == Error {
         return Error
     }
 
@@ -76,20 +77,39 @@ func (r *Module) Init(o *Option) int {
 }
 
 func (r *Module) Main(cfg *Configure) int {
-    /*
-    modules := GetSpacModules(Modulers)
-
-    for i := 0; modules[i] != nil; i++ {
-        module := modules[i]
-        module.Init(cfg.Option)
+    if Sentinel[MAIN] {
+        return Ok
     }
-    */
+
+    Sentinel[MAIN] = true
+
+    modules := GetSpacModules(Modulers)
+    for _, v := range modules {
+        if v != nil {
+            if self := v.Self(); self != nil {
+                go v.Main(cfg)
+            }
+        }
+    }
 
     return Ok
 }
 
 func (r *Module) Exit() int {
-    fmt.Println("channels exit")
+    if Sentinel[EXIT] {
+        return Ok
+    }
+
+    Sentinel[EXIT] = true
+
+    for _, v := range Modulers {
+        if v != nil {
+            if self := v.Self(); self != nil {
+                v.Exit()
+            }
+        }
+    }
+
     return Ok
 }
 
@@ -113,15 +133,6 @@ func (m *Module) SetIndex(i int) {
 
 func GetSomeModules(m []Moduler, modType int64) []Moduler {
     var modulers []Moduler
-/*
-    for i := 0; m[i] != nil; i++ {
-        module := m[i].Self()
-
-        if module.Type == modType {
-            modulers = Load(modulers, m[i])
-        }
-    }
-    */
 
     for _, v := range m {
         if v != nil {
@@ -140,24 +151,12 @@ func GetSomeModules(m []Moduler, modType int64) []Moduler {
 
 func GetSpacModules(m []Moduler) []Moduler {
     var modulers []Moduler
-/*
-    for i := 0; m[i] != nil; i++ {
-        module := m[i].Self()
-
-        if module.Type == SYSTEM_MODULE ||
-           module.Type == CONFIG_MODULE {
-            continue
-        }
-
-        modulers = Load(modulers, m[i])
-    }
-    */
 
     for _, v := range m {
         if v != nil {
             if self := v.Self(); self != nil {
                 if self.Type == SYSTEM_MODULE ||
-                self.Type == CONFIG_MODULE {
+                   self.Type == CONFIG_MODULE {
                     continue
                 }
 
@@ -194,17 +193,6 @@ func GetPartModules(m []Moduler, modType int64) []Moduler {
     var modulers []Moduler
 
     modType = modType >> 28
-
-    /*
-    for i := 0; m[i] != nil; i++ {
-        module := m[i].Self()
-        moduleType := module.Type >> 28
-
-        if moduleType == modType {
-            modulers = Load(modulers, m[i])
-        }
-    }
-    */
 
     for _, v := range m {
         if v != nil {

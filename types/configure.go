@@ -377,4 +377,5 @@ func SetOutput(cfg *Configure, _ *Command, _ *unsafe.Pointer) int {
     Block(cfg, Modulers, OUTPUT_MODULE, flag)
 
     return Ok
+
 }
