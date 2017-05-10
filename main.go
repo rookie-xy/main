@@ -1,6 +1,9 @@
 package main
 
 import (
+       "fmt"
+       "os"
+
     . "github.com/rookie-xy/worker/types"
 
     _ "github.com/rookie-xy/modules/option/simple/src"
@@ -14,35 +17,9 @@ import (
     _ "github.com/rookie-xy/plugins/codecs/plain/src"
     _ "github.com/rookie-xy/plugins/codecs/multiline/src"
     _ "github.com/rookie-xy/plugins/codecs/yaml/src"
-
-    "fmt"
-    "os"
 )
 
 var modulers = String{ len(Modulers), "modulers" }
-
-func Main(o *Option) {
-    modules := GetSpacModules(Modulers)
-
-    for _, v := range modules {
-        if v != nil {
-            if self := v.Self(); self != nil {
-                if v.Init(o) == Error {
-                    /* Error */
-                }
-            }
-        }
-    }
-
-    worker.Main(o.Configure)
-}
-
-func Exit(m []Moduler) {
-    for i := 0; m[i] != nil; i++ {
-        module := m[i]
-        module.Exit()
-    }
-}
 
 func Monitor() {
     select {
@@ -64,7 +41,6 @@ var workerCommands = []Command{
       0,
       0,
       nil },
-
 
     { inputs,
       INPUT_CONFIG,
@@ -104,7 +80,6 @@ func main() {
     }
 
     Modulers = Load(Modulers, nil)
-
     for i, v := range Modulers {
         if v != nil {
             if self := v.Self(); self != nil {
@@ -118,13 +93,17 @@ func main() {
         return
     }
 
+    Sentinel[INIT] = true
+
     worker.Init(option)
 
-    //worker.Exit()
+    Sentinel[MAIN] = true
 
-    Main(option)
+    worker.Main(option.Configure)
 
     Monitor()
+
+    Sentinel[EXIT] = true
 
     worker.Exit()
 }

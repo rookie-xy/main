@@ -16,15 +16,12 @@ var (
 type Configure struct {
     *File
     *Code
+     unsafe.Pointer
 
      commandType  int
      moduleType   int64
      value        interface{}
-
      Event        chan *Event
-
-     Channeler
-     Filter
 
      Configurer
 }
@@ -216,29 +213,6 @@ func Block(c *Configure, m []Moduler, modType int64, cfgType int) int {
             }
         }
     }
-
-    /*
-    for i := 0; m[i] != nil; i++ {
-        module := m[i].Self()
-
-        if module.Type != modType {
-            continue
-        }
-
-        if handle := module.Context; handle != nil {
-            if this := handle.Create(); this != nil {
-                module.CtxIndex++
-                handle.GetDatas()[module.CtxIndex] = &this
-
-            } else {
-                return Error
-            }
-
-        } else {
-            continue
-        }
-    }
-    */
 
     if c == nil {
         return Error

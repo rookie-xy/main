@@ -2,6 +2,7 @@ package types
 
 import (
     "os"
+    "unsafe"
 )
 
 type Module struct {
@@ -27,11 +28,11 @@ var Sentinel = [...]bool{
 }
 
 func (r *Module) Init(o *Option) int {
-    if Sentinel[INIT] {
+    if !Sentinel[INIT] {
         return Ok
     }
 
-    Sentinel[INIT] = true
+    Sentinel[INIT] = false
 
     modulers := GetSomeModules(Modulers, SYSTEM_MODULE)
     if modulers == nil {
@@ -52,6 +53,8 @@ func (r *Module) Init(o *Option) int {
     if configure = o.Configure; configure == nil {
         configure = NewConfigure(o.Log)
     }
+
+    configure.Pointer = unsafe.Pointer(o)
 
     for _, v := range modulers {
         if v != nil {
@@ -76,18 +79,34 @@ func (r *Module) Init(o *Option) int {
     return Ok
 }
 
-func (r *Module) Main(cfg *Configure) int {
-    if Sentinel[MAIN] {
+func (r *Module) Main(c *Configure) int {
+    if !Sentinel[MAIN] {
         return Ok
     }
 
-    Sentinel[MAIN] = true
+    Sentinel[MAIN] = false
+
+    o := (*Option)(unsafe.Pointer(uintptr(c.Pointer)))
+    if o == nil {
+        // TODO add log
+        return Error
+    }
 
     modules := GetSpacModules(Modulers)
     for _, v := range modules {
         if v != nil {
             if self := v.Self(); self != nil {
-                go v.Main(cfg)
+                if v.Init(o) == Error {
+                    return Error
+                }
+            }
+        }
+    }
+
+    for _, v := range modules {
+        if v != nil {
+            if self := v.Self(); self != nil {
+                go v.Main(c)
             }
         }
     }
@@ -96,11 +115,11 @@ func (r *Module) Main(cfg *Configure) int {
 }
 
 func (r *Module) Exit() int {
-    if Sentinel[EXIT] {
+    if !Sentinel[EXIT] {
         return Ok
     }
 
-    Sentinel[EXIT] = true
+    Sentinel[EXIT] = false
 
     for _, v := range Modulers {
         if v != nil {
@@ -210,3 +229,4 @@ func GetPartModules(m []Moduler, modType int64) []Moduler {
 
     return modulers
 }
+
