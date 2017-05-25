@@ -12,7 +12,7 @@ var (
 )
 
 const (
-    MODULE_V1  = 0
+    MODULE_V1  =  0
     CONTEXT_V1 = -1
 
     SYSTEM_MODULE = 0x10000000
@@ -26,6 +26,7 @@ const (
     CONFIG_LIST  = 0x00400000
     CONFIG_VALUE = 0x00F00000
 
+    MAIN_MODULE  = 0x09000000
     MAIN_CONFIG  = 0x01000000
     USER_CONFIG  = 0x0F000000
 )

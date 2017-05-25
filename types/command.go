@@ -6,10 +6,10 @@ package types
 
 import "unsafe"
 
-type SetFunc func(cfg *Configure, cmd *Command, p *unsafe.Pointer) int
+type SetFunc func(cfg *Configure_t, cmd *Command_t, ptr *unsafe.Pointer) int
 
-type Command struct {
-    Name    String
+type Command_t struct {
+    Name    String_t
     Type    int
     Set     SetFunc
     Conf    int
@@ -17,4 +17,4 @@ type Command struct {
     Post    interface{}
 }
 
-var NilCommand = Command{ NilString, 0, nil, 0, 0, nil }
+var NilCommand = Command_t{ NilString, 0, nil, 0, 0, nil }

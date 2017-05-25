@@ -1,18 +1,18 @@
 package types
 
-type Array struct {
+type Array_t struct {
     data    []interface{}
     length  int
 }
 
-func NewArray(length int) Array {
-    return Array{
+func NewArray(length int) Array_t {
+    return Array_t{
         data: make([]interface{}, length),
         length: length,
     }
 }
 
-func (r Array) SetData(i int, data interface{}) int {
+func (r Array_t) SetData(i int, data interface{}) int {
     if data == nil || i < 0 {
         return Error
     }
@@ -22,11 +22,11 @@ func (r Array) SetData(i int, data interface{}) int {
     return Ok
 }
 
-func (r Array) GetData(i int) interface{} {
+func (r Array_t) GetData(i int) interface{} {
     return r.data[i]
 }
 
-func (r Array) SetLength(length int) int {
+func (r Array_t) SetLength(length int) int {
     if length < 0 {
         return Error
     }
@@ -36,6 +36,6 @@ func (r Array) SetLength(length int) int {
     return Ok
 }
 
-func (r Array) GetLength() int {
+func (r Array_t) GetLength() int {
     return r.length
 }

@@ -4,12 +4,10 @@
 
 package types
 
-import (
-    "os"
-)
+import "os"
 
-type File struct {
-    *Log
+type File_t struct {
+    *Log_t
     *os.File
 
      name     string
@@ -19,14 +17,14 @@ type File struct {
      Filer
 }
 
-func NewFile(log *Log) *File {
-    return &File{
-        Log  : log,
+func NewFile(log *Log_t) *File_t {
+    return &File_t{
+        Log_t: log,
         File : os.Stdout,
     }
 }
 
-func (f *File) SetName(name string) int {
+func (f *File_t) SetName(name string) int {
     if name == "" {
         return Error
     }
@@ -36,11 +34,11 @@ func (f *File) SetName(name string) int {
     return Ok
 }
 
-func (f *File) GetName() string {
+func (f *File_t) GetName() string {
     return f.name
 }
 
-func (f *File) SetSize(size int64) int {
+func (f *File_t) SetSize(size int64) int {
     if size < 0 {
         return Error
     }
@@ -50,11 +48,11 @@ func (f *File) SetSize(size int64) int {
     return Ok
 }
 
-func (f *File) GetSize() int64 {
+func (f *File_t) GetSize() int64 {
     return f.size
 }
 
-func (f *File) SetBytes(bytes []byte) int {
+func (f *File_t) SetBytes(bytes []byte) int {
     if bytes == nil {
         return Error
     }
@@ -64,14 +62,15 @@ func (f *File) SetBytes(bytes []byte) int {
     return Ok
 }
 
-func (f *File) GetBytes() []byte {
+func (f *File_t) GetBytes() []byte {
     return f.bytes
 }
 
-func (f *File) Open(name string) int {
+func (f *File_t) Open(name string) int {
     var error error
 
     f.File, error = os.OpenFile(name, os.O_RDWR, 0777)
+    f.File.Stat()
     if error != nil {
         f.Info("open file error: %s", error)
         return Error
@@ -88,7 +87,7 @@ func (f *File) Open(name string) int {
     return Ok
 }
 
-func (f *File) Closer() int {
+func (f *File_t) Closer() int {
     if error := f.Close(); error != nil {
         f.Info("close file error: %s", error)
         return Error
@@ -97,7 +96,7 @@ func (f *File) Closer() int {
     return Ok
 }
 
-func (f *File) Reader() int {
+func (f *File_t) Reader() int {
     var char []byte
 
     if size := f.size; size <= 0 {
@@ -118,6 +117,6 @@ func (f *File) Reader() int {
     return Ok
 }
 
-func (f *File) Writer() int {
+func (f *File_t) Writer() int {
     return Ok
 }

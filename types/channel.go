@@ -1,30 +1,31 @@
 package types
 
-type Channel struct {
+type Channel_t struct {
     name string
 
-    Channeler
+    Channel
 }
 
-func NewChannel(ch Channeler) *Channel {
-    return &Channel{
+func NewChannel(ch Channel) *Channel_t {
+    return &Channel_t{
         "channel",
         ch,
     }
 }
-
-func (c *Channel) Push(e *Event) int {
-    if handler := c.Channeler; handler != nil {
-        return handler.Push(e)
+/*
+func (c *Channel_t) Push(e *Event) int {
+    if handler := c.Channel; handler != nil {
+        return handler.Push()
     }
 
     return Ok
 }
 
-func (c *Channel) Pull() *Event {
-    if handler := c.Channeler; handler != nil {
+func (c *Channel_t) Pull() *Event {
+    if handler := c.Channel; handler != nil {
         return handler.Pull()
     }
 
     return nil
 }
+*/

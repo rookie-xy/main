@@ -5,13 +5,13 @@ import (
     "errors"
 )
 
-type Code struct {
+type Codec_t struct {
     name string
     Codec
 }
 
-func NewCode(c Codec) Code {
-    return Code{
+func NewCodec(c Codec) Codec_t {
+    return Codec_t{
         name: "codec",
         Codec: c,
     }
@@ -29,12 +29,12 @@ func Setup(codecs []Codec, codec Codec) []Codec {
     return codecs
 }
 
-func SetCodec(cfg *Configure, cmd *Command, ptr *unsafe.Pointer) int {
+func SetCodec(cfg *Configure_t, cmd *Command_t, ptr *unsafe.Pointer) int {
     if cfg == nil || cmd == nil || ptr == nil {
         return Error
     }
 
-    field := (*Code)(unsafe.Pointer(uintptr(*ptr) + cmd.Offset))
+    field := (*Codec_t)(unsafe.Pointer(uintptr(*ptr) + cmd.Offset))
     if field == nil {
         return Error
     }
@@ -46,7 +46,7 @@ func SetCodec(cfg *Configure, cmd *Command, ptr *unsafe.Pointer) int {
 
     values := value.(map[interface{}]interface{})
 
-    var code Code
+    var code Codec_t
 
     for k, v := range values {
         name := k.(string)
@@ -58,7 +58,7 @@ func SetCodec(cfg *Configure, cmd *Command, ptr *unsafe.Pointer) int {
 
             codec.Init(v)
 
-            code = NewCode(codec)
+            code = NewCodec(codec)
             code.name = name
         }
     }
@@ -68,7 +68,7 @@ func SetCodec(cfg *Configure, cmd *Command, ptr *unsafe.Pointer) int {
     return Ok
 }
 
-func (r Code) Encode(in interface{}) (interface{}, error) {
+func (r Codec_t) Encode(in interface{}) (interface{}, error) {
     if handler := r.Codec; handler != nil {
         return handler.Encode(in)
     }
@@ -76,7 +76,7 @@ func (r Code) Encode(in interface{}) (interface{}, error) {
     return nil, errors.New("No found handler")
 }
 
-func (r Code) Decode(in []byte) (interface{}, error) {
+func (r Codec_t) Decode(in []byte) (interface{}, error) {
     if handler := r.Codec; handler != nil {
         return handler.Decode(in)
     }

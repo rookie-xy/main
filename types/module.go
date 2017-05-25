@@ -1,19 +1,22 @@
+/*
+ * Copyright (C) 2016 Meng Shi
+ */
+
 package types
 
 import (
     "os"
-    "unsafe"
 )
 
-type Module struct {
+type Module_t struct {
     Index      int
     CtxIndex   int
     Context    Context
-    Commands   []Command
+    Commands   []Command_t
     Type       int64
 }
 
-var Modulers []Moduler
+var Modules []Module
 
 const (
     INIT = iota
@@ -27,19 +30,19 @@ var Sentinel = [...]bool{
     EXIT: false,
 }
 
-func (r *Module) Init(o *Option) int {
+func (r *Module_t) Init(o *Option_t) int {
     if !Sentinel[INIT] {
         return Ok
     }
 
     Sentinel[INIT] = false
 
-    modulers := GetSomeModules(Modulers, SYSTEM_MODULE)
-    if modulers == nil {
+    modules := GetSomeModules(Modules, SYSTEM_MODULE)
+    if modules == nil {
         return Error
     }
 
-    for _, v := range modulers {
+    for _, v := range modules {
         if v != nil {
             if self := v.Self(); self != nil {
                 if v.Init(o) == Error {
@@ -49,14 +52,12 @@ func (r *Module) Init(o *Option) int {
         }
     }
 
-    var configure *Configure
-    if configure = o.Configure; configure == nil {
-        configure = NewConfigure(o.Log)
+    var configure *Configure_t
+    if configure = o.Configure_t; configure == nil {
+        configure = NewConfigure(o.Log_t)
     }
 
-    configure.Pointer = unsafe.Pointer(o)
-
-    for _, v := range modulers {
+    for _, v := range modules {
         if v != nil {
             if self := v.Self(); self != nil {
                 go v.Main(configure)
@@ -72,27 +73,30 @@ func (r *Module) Init(o *Option) int {
         }
     }
 
-    if Block(configure, Modulers, r.Type, CONFIG_BLOCK) == Error {
+    if Block(configure, Modules, r.Type, CONFIG_BLOCK) == Error {
         return Error
     }
+
+    // NOTE
+    configure.value = o
 
     return Ok
 }
 
-func (r *Module) Main(c *Configure) int {
+func (r *Module_t) Main(c *Configure_t) int {
     if !Sentinel[MAIN] {
         return Ok
     }
 
     Sentinel[MAIN] = false
 
-    o := (*Option)(unsafe.Pointer(uintptr(c.Pointer)))
+    o := c.value.(*Option_t)
     if o == nil {
         // TODO add log
         return Error
     }
 
-    modules := GetSpacModules(Modulers)
+    modules := GetSpacModules(Modules)
     for _, v := range modules {
         if v != nil {
             if self := v.Self(); self != nil {
@@ -107,6 +111,7 @@ func (r *Module) Main(c *Configure) int {
         if v != nil {
             if self := v.Self(); self != nil {
                 go v.Main(c)
+                //c.Start(v.Main, c)
             }
         }
     }
@@ -114,14 +119,20 @@ func (r *Module) Main(c *Configure) int {
     return Ok
 }
 
-func (r *Module) Exit() int {
+func (r *Module_t) Exit() int {
     if !Sentinel[EXIT] {
         return Ok
     }
 
     Sentinel[EXIT] = false
 
-    for _, v := range Modulers {
+    select {
+
+    }
+
+    // TODO Reload
+
+    for _, v := range Modules {
         if v != nil {
             if self := v.Self(); self != nil {
                 v.Exit()
@@ -129,14 +140,16 @@ func (r *Module) Exit() int {
         }
     }
 
+    // TODO close main
+
     return Ok
 }
 
-func (m *Module) Self() *Module {
+func (m *Module_t) Self() *Module_t {
     return m
 }
 
-func Load(modulers []Moduler, moduler Moduler) []Moduler {
+func Load(modulers []Module, moduler Module) []Module {
     if modulers == nil && moduler == nil {
         return nil
     }
@@ -146,12 +159,12 @@ func Load(modulers []Moduler, moduler Moduler) []Moduler {
     return modulers
 }
 
-func (m *Module) SetIndex(i int) {
+func (m *Module_t) SetIndex(i int) {
     m.Index = i
 }
 
-func GetSomeModules(m []Moduler, modType int64) []Moduler {
-    var modulers []Moduler
+func GetSomeModules(m []Module, modType int64) []Module {
+    var modulers []Module
 
     for _, v := range m {
         if v != nil {
@@ -168,8 +181,8 @@ func GetSomeModules(m []Moduler, modType int64) []Moduler {
     return modulers
 }
 
-func GetSpacModules(m []Moduler) []Moduler {
-    var modulers []Moduler
+func GetSpacModules(m []Module) []Module {
+    var modulers []Module
 
     for _, v := range m {
         if v != nil {
@@ -189,7 +202,7 @@ func GetSpacModules(m []Moduler) []Moduler {
     return modulers
 }
 
-func GetPartModules(m []Moduler, modType int64) []Moduler {
+func GetPartModules(m []Module, modType int64) []Module {
     if m == nil || len(m) <= 0 {
         return nil
     }
@@ -209,15 +222,12 @@ func GetPartModules(m []Moduler, modType int64) []Moduler {
         }
     }
 
-    var modulers []Moduler
-
+    var modulers []Module
     modType = modType >> 28
-
     for _, v := range m {
         if v != nil {
             if self := v.Self(); self != nil {
                 moduleType := self.Type >> 28
-
                 if moduleType == modType {
                     modulers = Load(modulers, v)
                 }
@@ -229,4 +239,3 @@ func GetPartModules(m []Moduler, modType int64) []Moduler {
 
     return modulers
 }
-

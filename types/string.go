@@ -4,9 +4,9 @@
 
 package types
 
-type String struct {
+type String_t struct {
     Len int
     Data interface{} 
 }
 
-var NilString = String{ 0, nil }
+var NilString = String_t{ 0, nil }

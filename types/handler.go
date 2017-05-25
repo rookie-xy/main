@@ -1,12 +1,18 @@
+/*
+ * Copyright (C) 2016 Meng Shi
+ */
+
 package types
 
 import "unsafe"
 
-type Moduler interface {
-    Init(o *Option) int
-    Main(c *Configure) int
+type MainFunc func(c *Configure_t) int
+
+type Module interface {
+    Init(o *Option_t) int
+    Main(c *Configure_t) int
     Exit() int
-    Self() *Module
+    Self() *Module_t
 }
 
 type Context interface {
@@ -14,22 +20,45 @@ type Context interface {
     GetDatas() []*unsafe.Pointer
 }
 
-type Channeler interface {
-    Push(e *Event) int
-    Pull() *Event
+type Channel interface {
+    New() Channel
+    Init(configure interface{}) int
+
+    Push() int
+    Pull() int
+
+    //Publish(e *Event) int
+    //Subscribe() *Event
+    //Filter
+    //Codec
 }
 
-type Configurer interface {
+type Filter interface {
+    New() Filter
+    Init(configure interface{}) int
+    Washing(in []byte) (interface{}, error)
+    Type(name string) int
+}
+
+type Codec interface {
+    New() Codec
+    Init(configure interface{}) int
+    Encode(in interface{}) (interface{}, error)
+    Decode(in []byte) (interface{}, error)
+    Type(name string) int
+}
+
+type Configure interface {
     GetConfigure() int
     SetConfigure() int
 }
 
-type Cycler interface {
-    Start(c *Configure, name string) int
+type Cycle interface {
+    Start(c *Configure_t) int
     Stop() int
 }
 
-type Eventer interface {
+type Event interface {
     JsonEncode()
     JsonDecode()
 }
@@ -41,26 +70,14 @@ type Filer interface {
     Writer() int
 }
 
-type Loger interface {
+type Log interface {
     Dump() int
 }
 
-type Optioner interface {
+type Option interface {
     Parser() int
 }
 
-type Stringer interface {
-
-}
-
-type Filter interface {
-
-}
-
-type Codec interface {
-    New() Codec
-    Init(configure interface{}) int
-    Encode(in interface{}) (interface{}, error)
-    Decode(in []byte) (interface{}, error)
-    Type(name string) int
+type String interface {
+    Len() int
 }

@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2017 Meng Shi
+ */
+
 package main
 
 import (
@@ -11,29 +15,25 @@ import (
 
     //_ "github.com/rookie-xy/plugins/inputs/stdin/src"
     _ "github.com/rookie-xy/modules/inputs/file/src"
-    _ "github.com/rookie-xy/modules/channels/memory/src"
+    //_ "github.com/rookie-xy/modules/channels/memory/src"
+    _ "github.com/rookie-xy/modules/channels/topic/src"
     _ "github.com/rookie-xy/modules/outputs/stdout/src"
+    _ "github.com/rookie-xy/modules/outputs/elasticsearch/src"
 
     _ "github.com/rookie-xy/plugins/codecs/plain/src"
     _ "github.com/rookie-xy/plugins/codecs/multiline/src"
     _ "github.com/rookie-xy/plugins/codecs/yaml/src"
 )
 
-var modulers = String{ len(Modulers), "modulers" }
-
-func Monitor() {
-    select {
-
-    }
-}
-
 var (
-    channels = String{ len("channels"), "channels" }
-    inputs   = String{ len("inputs"), "inputs" }
-    outputs  = String{ len("outputs"), "outputs" }
+    modules  = String_t{ len(Modules),    "modules"  }
+
+    channels = String_t{ len("channels"), "channels" }
+    inputs   = String_t{ len("inputs"),   "inputs"   }
+    outputs  = String_t{ len("outputs"),  "outputs"  }
 )
 
-var workerCommands = []Command{
+var workerCommands = []Command_t{
 
     { channels,
       CHANNEL_CONFIG,
@@ -59,7 +59,7 @@ var workerCommands = []Command{
     NilCommand,
 }
 
-var worker = &Module {
+var worker = &Module_t{
     MODULE_V1,
     CONTEXT_V1,
     nil,
@@ -68,19 +68,19 @@ var worker = &Module {
 }
 
 func init() {
-    Modulers = Load(Modulers, worker)
+    Modules = Load(Modules, worker)
 }
 
 func main() {
     log := NewLog()
 
-    if modulers.Len < 1 {
-        fmt.Printf("[%s]have not found\n", modulers.Data)
-        return
+    if modules.Len < 1 {
+        fmt.Printf("[%s]have not found\n", modules.Data)
+        exit()
     }
 
-    Modulers = Load(Modulers, nil)
-    for i, v := range Modulers {
+    Modules = Load(Modules, nil)
+    for i, v := range Modules {
         if v != nil {
             if self := v.Self(); self != nil {
                 self.SetIndex(i)
@@ -90,7 +90,7 @@ func main() {
 
     option := NewOption(log)
     if option.SetArgs(len(os.Args), os.Args) == Error {
-        return
+        exit()
     }
 
     Sentinel[INIT] = true
@@ -99,11 +99,12 @@ func main() {
 
     Sentinel[MAIN] = true
 
-    worker.Main(option.Configure)
-
-    Monitor()
+    worker.Main(option.Configure_t)
 
     Sentinel[EXIT] = true
 
     worker.Exit()
+}
+
+func exit() {
 }

@@ -4,33 +4,33 @@
 
 package types
 
-type Option struct {
-    *Log
-    *Configure
+type Option_t struct {
+    *Log_t
+    *Configure_t
 
      argc   int
      argv   []string
      items  map[string]interface{}
 
-     option Optioner
+     option Option
 }
 
-func NewOption(log *Log) *Option {
-    return &Option{
-        Log:   log,
+func NewOption(log *Log_t) *Option_t {
+    return &Option_t{
+        Log_t: log,
         items: make(map[string]interface{}),
     }
 }
 
-func (o *Option) GetArgc() int {
+func (o *Option_t) GetArgc() int {
     return o.argc
 }
 
-func (o *Option) GetArgv() []string {
+func (o *Option_t) GetArgv() []string {
     return o.argv
 }
 
-func (o *Option) SetArgs(argc int, argv []string) int {
+func (o *Option_t) SetArgs(argc int, argv []string) int {
     if argc <= 0 || argv == nil {
         return Error
     }
@@ -41,10 +41,10 @@ func (o *Option) SetArgs(argc int, argv []string) int {
     return Ok
 }
 
-func (o *Option) SetItem(k string, v interface{}) {
+func (o *Option_t) SetItem(k string, v interface{}) {
     o.items[k] = v
 }
 
-func (o *Option) GetItem(k string) interface{} {
+func (o *Option_t) GetItem(k string) interface{} {
     return o.items[k]
 }

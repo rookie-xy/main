@@ -6,6 +6,7 @@ package types
 
 import (
     "unsafe"
+    "sync"
 )
 
 var (
@@ -13,27 +14,31 @@ var (
     ConfigError = -1
 )
 
-type Configure struct {
-    *File
-    *Code
-     unsafe.Pointer
+type Configure_t struct {
+    *File_t
+    *Codec_t
+
+     sync.Mutex
 
      commandType  int
      moduleType   int64
      value        interface{}
-     Event        chan *Event
+     Event        chan *Event_t
 
-     Configurer
+     Channels      []Channel
+
+     Configure
+     Cycle
 }
 
-func NewConfigure(log *Log) *Configure {
-    return &Configure{
-        File:  NewFile(log),
-        Event: make(chan *Event),
+func NewConfigure(log *Log_t) *Configure_t {
+    return &Configure_t{
+        File_t:  NewFile(log),
+        Event : make(chan *Event_t),
     }
 }
 
-func (c *Configure) SetModuleType(moduleType int64) int {
+func (c *Configure_t) SetModuleType(moduleType int64) int {
     if moduleType <= 0 {
         return Error
     }
@@ -43,7 +48,7 @@ func (c *Configure) SetModuleType(moduleType int64) int {
     return Ok
 }
 
-func (c *Configure) SetCommandType(commandType int) int {
+func (c *Configure_t) SetCommandType(commandType int) int {
     if commandType <= 0 {
         return Error
     }
@@ -53,7 +58,7 @@ func (c *Configure) SetCommandType(commandType int) int {
     return Ok
 }
 
-func (c *Configure) SetValue(value interface{}) int {
+func (c *Configure_t) SetValue(value interface{}) int {
     if value == nil {
         return Error
     }
@@ -61,83 +66,83 @@ func (c *Configure) SetValue(value interface{}) int {
     return Ok
 }
 
-func (c *Configure) GetValue() interface{} {
-    return c.value
+func (r *Configure_t) GetValue() interface{} {
+    return r.value
 }
 
-func (c *Configure) NewConfigurer(cr Configurer) int {
-    if cr == nil {
+func (r *Configure_t) NewConfigure(c Configure) int {
+    if c == nil {
        return Error
     }
 
-    c.Configurer = cr
+    r.Configure = c
 
     return Ok
 }
 
-func (c *Configure) SetConfigure() int {
-    if handler := c.Configurer; handler != nil {
+func (r *Configure_t) SetConfigure() int {
+    if handler := r.Configure; handler != nil {
         return handler.SetConfigure()
     }
 
-    c.Warn("set configure not found")
+    r.Warn("set configure not found")
 
     return Error
 }
 
-func (c *Configure) GetConfigure() int {
-    if handler := c.Configurer; handler != nil {
+func (r *Configure_t) GetConfigure() int {
+    if handler := r.Configure; handler != nil {
         return handler.GetConfigure()
     }
 
-    c.Warn("get configure not found")
+    r.Warn("get configure not found")
 
     return Error
 }
 
 
-func (c *Configure) Materialized(modules []Moduler) int {
-    if c.value == nil {
-        content := c.GetBytes()
+func (r *Configure_t) Materialized(modules []Module) int {
+    if r.value == nil {
+        content := r.GetBytes()
 
         if content == nil {
-            c.Error("configure content: %s, size: %d\n",
-                      content, c.GetSize())
+            r.Error("configure content: %s, size: %d\n",
+                      content, r.GetSize())
 
             return Error
         }
 
         var e error
 
-        if c.value, e = c.Decode(content); e != nil {
+        if r.value, e = r.Decode(content); e != nil {
             return Error
         }
     }
 
-    switch v := c.value.(type) {
+    switch v := r.value.(type) {
 
     case []interface{}:
         for _, value := range v {
-            c.value = value
-            c.Materialized(modules)
+            r.value = value
+            r.Materialized(modules)
         }
 
     case map[interface{}]interface{}:
-        if c.doParse(v, modules) == Error {
+        if r.doParse(v, modules) == Error {
             return Error
         }
 
     default:
-        c.Warn("unknown")
+        r.Warn("unknown")
     }
 
     return Ok
 }
 
-func (c *Configure) doParse(materialized map[interface{}]interface{}, m []Moduler) int {
+func (r *Configure_t) doParse(materialized map[interface{}]interface{}, m []Module) int {
     flag := Ok
 
-    modules := GetPartModules(m, c.moduleType)
+    modules := GetPartModules(m, r.moduleType)
     if modules == nil {
         return Error
     }
@@ -175,9 +180,9 @@ func (c *Configure) doParse(materialized map[interface{}]interface{}, m []Module
                         }
                     }
 
-                    c.value = value
+                    r.value = value
 
-                    command.Set(c, &command, data)
+                    command.Set(r, &command, data)
                 }
             }
         }
@@ -190,7 +195,7 @@ func (c *Configure) doParse(materialized map[interface{}]interface{}, m []Module
     return ConfigOk
 }
 
-func Block(c *Configure, m []Moduler, modType int64, cfgType int) int {
+func Block(c *Configure_t, m []Module, modType int64, cfgType int) int {
     for _, v := range m {
         if v != nil {
             if self := v.Self(); self != nil {
@@ -202,7 +207,6 @@ func Block(c *Configure, m []Moduler, modType int64, cfgType int) int {
                     if this := handle.Create(); this != nil {
                         self.CtxIndex++
                         handle.GetDatas()[self.CtxIndex] = &this
-
                     } else {
                         return Error
                     }
@@ -233,7 +237,7 @@ func Block(c *Configure, m []Moduler, modType int64, cfgType int) int {
     return Ok
 }
 
-func SetFlag(cfg *Configure, cmd *Command, ptr *unsafe.Pointer) int {
+func SetFlag(cfg *Configure_t, cmd *Command_t, ptr *unsafe.Pointer) int {
     if cfg == nil || cmd == nil || ptr == nil {
         return Error
     }
@@ -259,7 +263,7 @@ func SetFlag(cfg *Configure, cmd *Command, ptr *unsafe.Pointer) int {
     return Ok
 }
 
-func SetString(cfg *Configure, cmd *Command, ptr *unsafe.Pointer) int {
+func SetString(cfg *Configure_t, cmd *Command_t, ptr *unsafe.Pointer) int {
     if cfg == nil || cmd == nil || ptr == nil {
         return Error
     }
@@ -276,7 +280,7 @@ func SetString(cfg *Configure, cmd *Command, ptr *unsafe.Pointer) int {
     return Ok
 }
 
-func SetNumber(cfg *Configure, cmd *Command, ptr *unsafe.Pointer) int {
+func SetNumber(cfg *Configure_t, cmd *Command_t, ptr *unsafe.Pointer) int {
     if cfg == nil || cmd == nil || ptr == nil {
         return Error
     }
@@ -294,12 +298,12 @@ func SetNumber(cfg *Configure, cmd *Command, ptr *unsafe.Pointer) int {
 }
 
 
-func SetArray(cfg *Configure, cmd *Command, ptr *unsafe.Pointer) int {
+func SetArray(cfg *Configure_t, cmd *Command_t, ptr *unsafe.Pointer) int {
     if cfg == nil || cmd == nil || ptr == nil {
         return Error
     }
 
-    field := (*Array)(unsafe.Pointer(uintptr(*ptr) + cmd.Offset))
+    field := (*Array_t)(unsafe.Pointer(uintptr(*ptr) + cmd.Offset))
 
     value := cfg.GetValue()
     if value == nil {
@@ -320,36 +324,35 @@ func SetArray(cfg *Configure, cmd *Command, ptr *unsafe.Pointer) int {
     return Ok
 }
 
-func SetChannel(cfg *Configure, _ *Command, _ *unsafe.Pointer) int {
-    if nil == cfg {
+func SetChannel(c *Configure_t, _ *Command_t, _ *unsafe.Pointer) int {
+    if nil == c {
         return Error
     }
 
     flag := USER_CONFIG|CONFIG_ARRAY
-    Block(cfg, Modulers, CHANNEL_MODULE, flag)
+    Block(c, Modules, CHANNEL_MODULE, flag)
 
     return Ok
 }
 
-func SetInput(cfg *Configure, _ *Command, _ *unsafe.Pointer) int {
-    if nil == cfg {
+func SetInput(c *Configure_t, _ *Command_t, _ *unsafe.Pointer) int {
+    if nil == c {
         return Error
     }
 
     flag := USER_CONFIG|CONFIG_ARRAY
-    Block(cfg, Modulers, INPUT_MODULE, flag)
+    Block(c, Modules, INPUT_MODULE, flag)
 
     return Ok
 }
 
-func SetOutput(cfg *Configure, _ *Command, _ *unsafe.Pointer) int {
-    if nil == cfg {
+func SetOutput(c *Configure_t, _ *Command_t, _ *unsafe.Pointer) int {
+    if nil == c {
         return Error
     }
 
     flag := USER_CONFIG|CONFIG_ARRAY
-    Block(cfg, Modulers, OUTPUT_MODULE, flag)
+    Block(c, Modules, OUTPUT_MODULE, flag)
 
     return Ok
-
 }

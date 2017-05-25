@@ -6,7 +6,7 @@ package types
 
 import "time"
 
-type Event struct {
+type Event_t struct {
     id         int64
     name       string
 
@@ -22,18 +22,18 @@ type Event struct {
 
     data       []byte
 
-    This       chan *Event
+    This       chan *Event_t
 }
 
-func NewEvent() *Event {
-    return &Event{
+func NewEvent() *Event_t {
+    return &Event_t{
         name:      "event",
         timestamp: time.Now().Unix(),
-        This:      make(chan *Event),
+        This:      make(chan *Event_t),
     }
 }
 
-func (e *Event) SetName(name string) int {
+func (e *Event_t) SetName(name string) int {
     if name == "" {
         return Error
     }
@@ -43,54 +43,54 @@ func (e *Event) SetName(name string) int {
     return Ok
 }
 
-func (e *Event) GetName() string {
+func (e *Event_t) GetName() string {
     return e.name
 }
 
-func (e *Event) SetMagic(magic uint8) {
+func (e *Event_t) SetMagic(magic uint8) {
     e.magic = magic
 }
 
-func (e *Event) GetMagic() uint8 {
+func (e *Event_t) GetMagic() uint8 {
     return e.magic
 }
 
-func (e *Event) SetFlag(flag uint8) {
+func (e *Event_t) SetFlag(flag uint8) {
     e.flag = flag
 }
 
-func (e *Event) GetFlag() uint8 {
+func (e *Event_t) GetFlag() uint8 {
     return e.flag
 }
 
-func (e *Event) SetOption(option uint8) {
+func (e *Event_t) SetOption(option uint8) {
     e.option = option
 }
 
-func (e *Event) GetOption() uint8 {
+func (e *Event_t) GetOption() uint8 {
     return e.option
 }
 
-func (e *Event) SetOffset(offset uint32) {
+func (e *Event_t) SetOffset(offset uint32) {
     e.offset = offset
 }
 
-func (e *Event) GetOffset() uint32 {
+func (e *Event_t) GetOffset() uint32 {
     return e.offset
 }
 
-func (e *Event) SetLength(length uint64) {
+func (e *Event_t) SetLength(length uint64) {
     e.length = length
 }
 
-func (e *Event) GetLength() uint64 {
+func (e *Event_t) GetLength() uint64 {
     return e.length
 }
 
-func (e *Event) SetOpcode(opcode uint8) {
+func (e *Event_t) SetOpcode(opcode uint8) {
     e.opcode = opcode
 }
 
-func (e *Event) GetOpcode() uint8 {
+func (e *Event_t) GetOpcode() uint8 {
     return e.opcode
 }

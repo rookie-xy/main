@@ -1,56 +1,64 @@
 inputs:
     - file:
-          host: "10.0.3.31"
           group: "customer-gateway-tengine"
           type: "program_log_no_muiltline"
-          path: "/datasas/logs/customer_gateway"
-          name:
-              - "customer_gateway_access_*.log"
-              - "customer_gateway_access_*.log2"
+          paths:
+              - "data/logs/customer_gateway/customer_gateway_access_*.log"
+              - "data/logs/customer_gateway/customer_gateway_access_*.log2"
+          publish: "default"
           codec:
               plain: "text"
 
     - file:
-          host: "192.168.2.11"
-          group: "test"
-          type: "test_type"
-          path: "data/logs/abc/"
-          name:
-              - "pdms_*.log"
-              - "pdms_abc_*.log"
+          group: "test123"
+          type: "test"
+          paths:
+              - "data/ab*.log"
+              - "data/abc*.log2"
+          publish: "upl"
           codec:
               plain: "text"
-
-    - file:
-          host: "10.0.3.32"
-          group: "customer-gateway-tengine2"
-          type: "program_log_no_muiltline2"
-          path: "/datasas/logs/customer_gateway2"
-          name:
-              - "customer_gateway_access_*.log3"
-              - "customer_gateway_access_*.log4"
-          codec:
-              multiline:
-                  match: "^{ISO_9002_TIMESTAMP}"
-                  previous: "hahah"
-                  next: "heiehi"
 
 channels:
-    - memory:
-          name: "test_memory_2"
-          size: 2048
+    - topic:
+          name: "default"
+
+    - topic:
+          name: "wms_main"
+
+    - topic:
+          name: "pdms"
+#          filter:
+#              grok:
+#                  pattern: "{LOG_LEVEL} -"
 
 outputs:
     - stdout:
-          status: on
-          channel: "output_channel_name_1"
+          subscribe:
+              - "wms"
+              - "pms"
 
-    - stdout:
-          status: on
-          channel: "output_channel_name_2"
+          cluster:
+              - "10.0.0.45:9091"
+              - "10.0.0.46:9092"
+              - "10.0.0.47:9093"
 
-#filters:
-#    - grok:
-#          pattern:
-#              - "{LOG_LEVEL} -"
-#              - "{STRING} -"
+#    - kafka:
+#          subscribe:
+#              - "wms_main"
+#              - "pdms"
+
+#          broker:
+#              - "10.0.0.42:9092"
+#              - "10.0.0.43:9092"
+#              - "10.0.0.44:9092"
+
+    - elasticsearch:
+          subscribe:
+              - "pdms"
+              - "default"
+
+          cluster:
+              - "10.0.0.42:9092"
+              - "10.0.0.43:9092"
+              - "10.0.0.44:9092"
