@@ -37,17 +37,15 @@ func (r *Module_t) Init(o *Option_t) int {
 
     Sentinel[INIT] = false
 
-    modules := GetSomeModules(Modules, SYSTEM_MODULE)
+    modules := GetModules(Modules, SYSTEM_MODULE)
     if modules == nil {
         return Error
     }
 
     for _, v := range modules {
-        if v != nil {
-            if self := v.Self(); self != nil {
-                if v.Init(o) == Error {
-                    os.Exit(0)
-                }
+        if self := v.Self(); self != nil {
+            if v.Init(o) == Error {
+                os.Exit(0)
             }
         }
     }
@@ -58,10 +56,8 @@ func (r *Module_t) Init(o *Option_t) int {
     }
 
     for _, v := range modules {
-        if v != nil {
-            if self := v.Self(); self != nil {
-                go v.Main(configure)
-            }
+        if self := v.Self(); self != nil {
+            go v.Main(configure)
         }
     }
 
@@ -96,23 +92,19 @@ func (r *Module_t) Main(c *Configure_t) int {
         return Error
     }
 
-    modules := GetSpacModules(Modules)
+    modules := GetModules(Modules, SYSTEM_MODULE|CONFIG_MODULE)
     for _, v := range modules {
-        if v != nil {
-            if self := v.Self(); self != nil {
-                if v.Init(o) == Error {
-                    return Error
-                }
+        if self := v.Self(); self != nil {
+            if v.Init(o) == Error {
+                return Error
             }
         }
     }
 
     for _, v := range modules {
-        if v != nil {
-            if self := v.Self(); self != nil {
-                go v.Main(c)
-                //c.Start(v.Main, c)
-            }
+        if self := v.Self(); self != nil {
+            go v.Main(c)
+            //c.Start(v.Main, c)
         }
     }
 
@@ -133,10 +125,8 @@ func (r *Module_t) Exit() int {
     // TODO Reload
 
     for _, v := range Modules {
-        if v != nil {
-            if self := v.Self(); self != nil {
-                v.Exit()
-            }
+        if self := v.Self(); self != nil {
+            v.Exit()
         }
     }
 
@@ -149,93 +139,55 @@ func (m *Module_t) Self() *Module_t {
     return m
 }
 
-func Load(modulers []Module, moduler Module) []Module {
-    if modulers == nil && moduler == nil {
-        return nil
-    }
-
-    modulers = append(modulers, moduler)
-
-    return modulers
-}
-
 func (m *Module_t) SetIndex(i int) {
     m.Index = i
 }
 
-func GetSomeModules(m []Module, modType int64) []Module {
-    var modulers []Module
-
-    for _, v := range m {
-        if v != nil {
-            if self := v.Self(); self != nil {
-                if self.Type == modType {
-                    modulers = Load(modulers, v)
-                }
-            }
-        }
-    }
-
-    modulers = Load(modulers, nil)
-
-    return modulers
-}
-
-func GetSpacModules(m []Module) []Module {
-    var modulers []Module
-
-    for _, v := range m {
-        if v != nil {
-            if self := v.Self(); self != nil {
-                if self.Type == SYSTEM_MODULE ||
-                   self.Type == CONFIG_MODULE {
-                    continue
-                }
-
-                modulers = Load(modulers, v)
-            }
-        }
-    }
-
-    modulers = Load(modulers, nil)
-
-    return modulers
-}
-
-func GetPartModules(m []Module, modType int64) []Module {
+func GetModules(m []Module, modType int64) []Module {
     if m == nil || len(m) <= 0 {
         return nil
     }
 
+    pos  := uint(28)
+    flag := false
+
     switch modType {
 
     case SYSTEM_MODULE:
-        modulers := GetSomeModules(m, modType)
-        if modulers != nil {
-            return modulers
-        }
+        pos = 0
+        goto PARSE
 
     case CONFIG_MODULE:
-        modulers := GetSomeModules(m, modType)
-        if modulers != nil {
-            return modulers
-        }
+        pos = 0
+        goto PARSE
+
+    case SYSTEM_MODULE|CONFIG_MODULE:
+        pos = 0; flag = true
+        goto PARSE
     }
 
-    var modulers []Module
-    modType = modType >> 28
+PARSE:
+    var modules []Module
+
+    modType = modType >> pos
     for _, v := range m {
-        if v != nil {
-            if self := v.Self(); self != nil {
-                moduleType := self.Type >> 28
+        if self := v.Self(); self != nil {
+            moduleType := self.Type >> pos
+
+            if flag {
+                if moduleType == SYSTEM_MODULE ||
+                   moduleType == CONFIG_MODULE {
+                    continue
+                }
+
+                modules = append(modules, v)
+            } else {
                 if moduleType == modType {
-                    modulers = Load(modulers, v)
+                    modules = append(modules, v)
                 }
             }
         }
     }
 
-    modulers = Load(modulers, nil)
-
-    return modulers
+    return modules
 }

@@ -5,17 +5,14 @@
 package main
 
 import (
-       "fmt"
-       "os"
-
+      "fmt"
+      "os"
     . "github.com/rookie-xy/worker/types"
 
     _ "github.com/rookie-xy/modules/option/simple/src"
     _ "github.com/rookie-xy/modules/configure/file/src"
 
-    //_ "github.com/rookie-xy/plugins/inputs/stdin/src"
     _ "github.com/rookie-xy/modules/inputs/file/src"
-    //_ "github.com/rookie-xy/modules/channels/memory/src"
     _ "github.com/rookie-xy/modules/channels/topic/src"
     _ "github.com/rookie-xy/modules/outputs/stdout/src"
     _ "github.com/rookie-xy/modules/outputs/elasticsearch/src"
@@ -68,10 +65,11 @@ var worker = &Module_t{
 }
 
 func init() {
-    Modules = Load(Modules, worker)
+    Modules = append(Modules, worker)
 }
 
 func main() {
+
     log := NewLog()
 
     if modules.Len < 1 {
@@ -79,12 +77,9 @@ func main() {
         exit()
     }
 
-    Modules = Load(Modules, nil)
     for i, v := range Modules {
-        if v != nil {
-            if self := v.Self(); self != nil {
-                self.SetIndex(i)
-            }
+        if self := v.Self(); self != nil {
+            self.SetIndex(i)
         }
     }
 
@@ -107,4 +102,5 @@ func main() {
 }
 
 func exit() {
+    os.Exit(1)
 }

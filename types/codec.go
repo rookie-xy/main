@@ -19,16 +19,6 @@ func NewCodec(c Codec) Codec_t {
 
 var Codecs []Codec
 
-func Setup(codecs []Codec, codec Codec) []Codec {
-    if codecs == nil && codec == nil {
-        return nil
-    }
-
-    codecs = append(codecs, codec)
-
-    return codecs
-}
-
 func SetCodec(cfg *Configure_t, cmd *Command_t, ptr *unsafe.Pointer) int {
     if cfg == nil || cmd == nil || ptr == nil {
         return Error

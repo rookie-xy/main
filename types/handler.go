@@ -6,8 +6,6 @@ package types
 
 import "unsafe"
 
-type MainFunc func(c *Configure_t) int
-
 type Module interface {
     Init(o *Option_t) int
     Main(c *Configure_t) int
@@ -16,8 +14,8 @@ type Module interface {
 }
 
 type Context interface {
-    Create() unsafe.Pointer
-    GetDatas() []*unsafe.Pointer
+    Set() unsafe.Pointer
+    Get() []*unsafe.Pointer
 }
 
 type Channel interface {
@@ -33,11 +31,12 @@ type Channel interface {
     //Codec
 }
 
-type Filter interface {
-    New() Filter
-    Init(configure interface{}) int
-    Washing(in []byte) (interface{}, error)
-    Type(name string) int
+type Input interface {
+
+}
+
+type Output interface {
+
 }
 
 type Codec interface {
@@ -48,9 +47,16 @@ type Codec interface {
     Type(name string) int
 }
 
+type Filter interface {
+    New() Filter
+    Init(configure interface{}) int
+    Washing(in []byte) (interface{}, error)
+    Type(name string) int
+}
+
 type Configure interface {
-    GetConfigure() int
-    SetConfigure() int
+    Get() int
+    Set() int
 }
 
 type Cycle interface {
@@ -72,10 +78,6 @@ type Filer interface {
 
 type Log interface {
     Dump() int
-}
-
-type Option interface {
-    Parser() int
 }
 
 type String interface {

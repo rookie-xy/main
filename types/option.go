@@ -11,8 +11,6 @@ type Option_t struct {
      argc   int
      argv   []string
      items  map[string]interface{}
-
-     option Option
 }
 
 func NewOption(log *Log_t) *Option_t {

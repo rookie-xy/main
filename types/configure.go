@@ -82,7 +82,7 @@ func (r *Configure_t) NewConfigure(c Configure) int {
 
 func (r *Configure_t) SetConfigure() int {
     if handler := r.Configure; handler != nil {
-        return handler.SetConfigure()
+        return handler.Set()
     }
 
     r.Warn("set configure not found")
@@ -92,7 +92,7 @@ func (r *Configure_t) SetConfigure() int {
 
 func (r *Configure_t) GetConfigure() int {
     if handler := r.Configure; handler != nil {
-        return handler.GetConfigure()
+        return handler.Get()
     }
 
     r.Warn("get configure not found")
@@ -128,7 +128,7 @@ func (r *Configure_t) Materialized(modules []Module) int {
         }
 
     case map[interface{}]interface{}:
-        if r.doParse(v, modules) == Error {
+        if r.MapContext(v, modules) == Error {
             return Error
         }
 
@@ -139,10 +139,10 @@ func (r *Configure_t) Materialized(modules []Module) int {
     return Ok
 }
 
-func (r *Configure_t) doParse(materialized map[interface{}]interface{}, m []Module) int {
+func (r *Configure_t) MapContext(materialized map[interface{}]interface{}, m []Module) int {
     flag := Ok
 
-    modules := GetPartModules(m, r.moduleType)
+    modules := GetModules(m, r.moduleType)
     if modules == nil {
         return Error
     }
@@ -174,7 +174,7 @@ func (r *Configure_t) doParse(materialized map[interface{}]interface{}, m []Modu
 
                     var data *unsafe.Pointer
                     if handle := module.Context; handle != nil {
-                        data = handle.GetDatas()[module.CtxIndex];
+                        data = handle.Get()[module.CtxIndex];
                         if data == nil {
                             return Error
                         }
@@ -204,9 +204,9 @@ func Block(c *Configure_t, m []Module, modType int64, cfgType int) int {
                 }
 
                 if handle := self.Context; handle != nil {
-                    if this := handle.Create(); this != nil {
+                    if this := handle.Set(); this != nil {
                         self.CtxIndex++
-                        handle.GetDatas()[self.CtxIndex] = &this
+                        handle.Get()[self.CtxIndex] = &this
                     } else {
                         return Error
                     }
