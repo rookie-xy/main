@@ -14,43 +14,41 @@ type Module interface {
 }
 
 type Context interface {
-    Set() unsafe.Pointer
-    Get() []*unsafe.Pointer
+    Builder() unsafe.Pointer
+    Configure() []*unsafe.Pointer
+    Self() *Context_t
 }
 
 type Channel interface {
     New() Channel
-    Init(configure interface{}) int
-
-    Push() int
-    Pull() int
-
-    //Publish(e *Event) int
-    //Subscribe() *Event
-    //Filter
-    //Codec
+    Register(publish, subscribe string) int
+    Push(in *Event) int
+    Intercept() int
+    Pull(out *Event) int
+    Type(name string) int
 }
 
 type Input interface {
-
+    Listen() int
+    Reader() int
 }
 
 type Output interface {
-
+    Writer(events Event) int
 }
 
 type Codec interface {
     New() Codec
     Init(configure interface{}) int
     Encode(in interface{}) (interface{}, error)
-    Decode(in []byte) (interface{}, error)
+    Decode(out []byte) (interface{}, error)
     Type(name string) int
 }
 
 type Filter interface {
     New() Filter
     Init(configure interface{}) int
-    Washing(in []byte) (interface{}, error)
+    Washing(in Event) (interface{}, error)
     Type(name string) int
 }
 
@@ -60,13 +58,17 @@ type Configure interface {
 }
 
 type Cycle interface {
-    Start(c *Configure_t) int
+    New() Cycle
+    Init(configure interface{}) int
+    Start(p *unsafe.Pointer, c *Context_t) int
     Stop() int
+    Type(name string) int
 }
 
 type Event interface {
-    JsonEncode()
-    JsonDecode()
+    New() Event
+    Init(configure interface{}) int
+    Type(name string) int
 }
 
 type Filer interface {

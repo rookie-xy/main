@@ -25,10 +25,10 @@ type Configure_t struct {
      value        interface{}
      Event        chan *Event_t
 
-     Channels      []Channel
+     Channels     []Channel
 
      Configure
-     Cycle
+     //Cycle
 }
 
 func NewConfigure(log *Log_t) *Configure_t {
@@ -174,7 +174,7 @@ func (r *Configure_t) MapContext(materialized map[interface{}]interface{}, m []M
 
                     var data *unsafe.Pointer
                     if handle := module.Context; handle != nil {
-                        data = handle.Get()[module.CtxIndex];
+                        data = handle.Configure[module.Cursor];
                         if data == nil {
                             return Error
                         }
@@ -204,9 +204,9 @@ func Block(c *Configure_t, m []Module, modType int64, cfgType int) int {
                 }
 
                 if handle := self.Context; handle != nil {
-                    if this := handle.Set(); this != nil {
-                        self.CtxIndex++
-                        handle.Get()[self.CtxIndex] = &this
+                    if this := handle.Builder(); this != nil {
+                        self.Cursor++
+                        handle.Configure[self.Cursor] = &this
                     } else {
                         return Error
                     }

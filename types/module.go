@@ -4,16 +4,14 @@
 
 package types
 
-import (
-    "os"
-)
+import "os"
 
 type Module_t struct {
-    Index      int
-    CtxIndex   int
-    Context    Context
-    Commands   []Command_t
-    Type       int64
+    Index     int          //pointer module position
+    Cursor    int          //pointer context position
+    Context   Context
+    Commands  []Command_t
+    Type      int64
 }
 
 var Modules []Module
@@ -137,10 +135,6 @@ func (r *Module_t) Exit() int {
 
 func (m *Module_t) Self() *Module_t {
     return m
-}
-
-func (m *Module_t) SetIndex(i int) {
-    m.Index = i
 }
 
 func GetModules(m []Module, modType int64) []Module {

@@ -7,7 +7,7 @@ type Filter_t struct {
 
 func NewFilter(f Filter) *Filter_t {
     return &Filter_t{
-        "filtration",
+        "filter",
         f,
     }
 }

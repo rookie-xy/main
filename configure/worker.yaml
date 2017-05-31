@@ -17,7 +17,22 @@ inputs:
               - "data/abc*.log2"
           publish: "upl"
           codec:
-              plain: "text"
+              line:
+                  match: "\n"
+                  max: 2048
+
+    - file:
+          group: "test123"
+          type: "test"
+          paths:
+              - "data/ab*.log"
+              - "data/abc*.log2"
+          publish: "upl"
+          codec:
+              multiline:
+                  match: "^{ISO_9002_TIMESTAMP}"
+                  previous: ""
+                  next: ""
 
 channels:
     - topic:
@@ -33,32 +48,27 @@ channels:
 #                  pattern: "{LOG_LEVEL} -"
 
 outputs:
-    - stdout:
-          subscribe:
-              - "wms"
-              - "pms"
+    stdout:
+        subscribe:
+            - "pdms"
+            - "pms"
 
-          cluster:
-              - "10.0.0.45:9091"
-              - "10.0.0.46:9092"
-              - "10.0.0.47:9093"
+#    kafka:
+#        subscribe:
+#            - "wms_main"
+#            - "pdms"
 
-#    - kafka:
-#          subscribe:
-#              - "wms_main"
-#              - "pdms"
+#        broker:
+#            - "10.0.0.42:9092"
+#            - "10.0.0.43:9092"
+#            - "10.0.0.44:9092"
 
-#          broker:
-#              - "10.0.0.42:9092"
-#              - "10.0.0.43:9092"
-#              - "10.0.0.44:9092"
+    elasticsearch:
+        subscribe:
+            - "pdms"
+            - "default"
 
-    - elasticsearch:
-          subscribe:
-              - "pdms"
-              - "default"
-
-          cluster:
-              - "10.0.0.42:9092"
-              - "10.0.0.43:9092"
-              - "10.0.0.44:9092"
+        cluster:
+            - "10.0.0.42:9092"
+            - "10.0.0.43:9092"
+            - "10.0.0.44:9092"

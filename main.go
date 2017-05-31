@@ -17,7 +17,7 @@ import (
     _ "github.com/rookie-xy/modules/outputs/stdout/src"
     _ "github.com/rookie-xy/modules/outputs/elasticsearch/src"
 
-    _ "github.com/rookie-xy/plugins/codecs/plain/src"
+    _ "github.com/rookie-xy/plugins/codecs/line/src"
     _ "github.com/rookie-xy/plugins/codecs/multiline/src"
     _ "github.com/rookie-xy/plugins/codecs/yaml/src"
 )
@@ -79,7 +79,7 @@ func main() {
 
     for i, v := range Modules {
         if self := v.Self(); self != nil {
-            self.SetIndex(i)
+            self.Index = i
         }
     }
 
